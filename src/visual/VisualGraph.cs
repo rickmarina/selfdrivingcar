@@ -38,15 +38,15 @@ namespace selfdrivingcar.src.visual
 
             var nearest = Utils.GetNearestPoint(mouse, VisualPoints, 30);
 
-            HoveredPoint?.RestoreDefaultStyle();
-
-            if (nearest is not null && !nearest.Equals(SelectedPoint))
+            if (nearest is not null)
             {
+                HoveredPoint?.Hover(false);
                 HoveredPoint = nearest;
-                HoveredPoint.Hover();
+                HoveredPoint.Hover(true);
             }
             else
             {
+                HoveredPoint?.Hover(false);
                 HoveredPoint = null;
             }
 
@@ -63,6 +63,9 @@ namespace selfdrivingcar.src.visual
                 if (HoveredPoint is not null)
                 {
                     RemovePoint(HoveredPoint.GetPoint());
+                    if (SelectedPoint is not null && SelectedPoint.GetPoint().Equals(HoveredPoint.GetPoint()))
+                        SelectedPoint = null;
+                    HoveredPoint = null;
                 }
             }
             if (e.ChangedButton == System.Windows.Input.MouseButton.Left) //LEFT CLICK (new points)
@@ -70,20 +73,19 @@ namespace selfdrivingcar.src.visual
                 var position = e.GetPosition(this._canvas);
                 var mouse = new Point((float)position.X, (float)position.Y);
 
-                var nearest = Utils.GetNearestPoint(mouse, VisualPoints, 30);
-                SelectedPoint?.Reset();
-                HoveredPoint = null;
-                if (nearest is not null)
+                SelectedPoint?.Selected(false);
+                if (HoveredPoint is not null)
                 {
-                    SelectedPoint = nearest;
-                    SelectedPoint.Selected();
+                    SelectedPoint = HoveredPoint;
+                    SelectedPoint.Selected(true);
+                    //HoveredPoint = null;
                     return;
                 }
 
                 TryAddPoint(mouse);
 
                 SelectedPoint = this.VisualPoints.Last();
-                SelectedPoint.Selected();
+                SelectedPoint.Selected(true);
             }
 
         }
@@ -100,7 +102,7 @@ namespace selfdrivingcar.src.visual
                 point.Draw();
             }
 
-            SelectedPoint?.Selected();
+            SelectedPoint?.Selected(true);
         }
 
         public void UnDraw()

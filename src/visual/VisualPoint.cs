@@ -9,6 +9,8 @@ namespace selfdrivingcar.src.visual
         private readonly Point _point;
         private static readonly SolidColorBrush DefaultFillColor = Brushes.Black;
         private static readonly SolidColorBrush DefaultStrokeColor = Brushes.Black;
+        private bool selected = false;
+        private bool hovered = false; 
 
         public VisualPoint(Point point, Canvas canvas): base(canvas)
         {
@@ -36,20 +38,39 @@ namespace selfdrivingcar.src.visual
             AddToCanvas();
         }
 
-        public void Selected()
+        public void Selected(bool active)
         {
             if (shape != null)
             {
-                shape.StrokeThickness = 2;
-                shape.Stroke = Brushes.Yellow;
+                if (active) { 
+                    selected = true; 
+                    shape.StrokeThickness = 2;
+                    shape.Stroke = Brushes.Yellow;
+                } else
+                {
+                    selected = false;
+                    shape.StrokeThickness = 2;
+                    shape.Stroke = DefaultStrokeColor;
+
+                }
             }
         }
+       
 
-        public void Hover()
+        public void Hover(bool active)
         {
             if (shape is not null)
             {
-                shape.Fill = Brushes.OrangeRed;
+                if (active)
+                {
+                    hovered = true;
+                    shape.Fill = Brushes.OrangeRed;
+                } else
+                {
+                    hovered = false; 
+                    shape.Fill = DefaultFillColor;
+                }
+
             }
         }
         public void RestoreDefaultStyle()
