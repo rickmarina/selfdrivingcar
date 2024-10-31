@@ -89,6 +89,10 @@ namespace selfdrivingcar.src.visual
                 SelectedPoint?.Selected(false);
                 if (HoveredPoint is not null)
                 {
+                    if (SelectedPoint is not null)
+                    {
+                        TryAddSegment(new Segment(SelectedPoint.GetPoint(), HoveredPoint.GetPoint()));
+                    }
                     SelectedPoint = HoveredPoint;
                     SelectedPoint.Selected(true);
                     Dragging = true;
