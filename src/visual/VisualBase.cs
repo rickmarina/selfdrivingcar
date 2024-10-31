@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Controls;
+﻿using System.Windows.Controls;
 using System.Windows.Shapes;
 
 namespace selfdrivingcar.src.visual
@@ -24,8 +19,8 @@ namespace selfdrivingcar.src.visual
             if (addedToCanvas)
                 throw new InvalidOperationException("Point is already added to canvas");
 
-            _canvas.Children.Add(shape);
             addedToCanvas = true;
+            _canvas.Children.Add(shape);
         }
         public void RemoveFromCanvas()
         {
