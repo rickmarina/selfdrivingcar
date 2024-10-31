@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.8.34525.116
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "selfdrivingcar", "selfdrivingcar.csproj", "{0C0090B2-3C61-43A8-9A08-C069B713022C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C0090B2-3C61-43A8-9A08-C069B713022C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C0090B2-3C61-43A8-9A08-C069B713022C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C0090B2-3C61-43A8-9A08-C069B713022C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C0090B2-3C61-43A8-9A08-C069B713022C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BC8F364B-7853-4608-9E0C-EED29721AD13}
+	EndGlobalSection
+EndGlobal
