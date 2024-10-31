@@ -15,6 +15,7 @@ namespace selfdrivingcar.src.visual
 
         private VisualPoint? SelectedPoint;
         private VisualPoint? HoveredPoint;
+        private bool Dragging = false;
 
         public VisualGraph(Canvas canvas, Graph graph)
         {
@@ -50,10 +51,22 @@ namespace selfdrivingcar.src.visual
                 HoveredPoint = null;
             }
 
+            if (Dragging)
+            {
+                SelectedPoint!.UpdatePosition(mouse);
+                foreach (var seg in VisualSegments)
+                {
+                    if (seg.GetSegment().Includes(SelectedPoint.GetPoint()))
+                    {
+                        seg.UpdatePosition();
+                    }
+                }
+            }
+
         }
         private void _canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            
+            Dragging = false;
         }
         private void _canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -78,7 +91,7 @@ namespace selfdrivingcar.src.visual
                 {
                     SelectedPoint = HoveredPoint;
                     SelectedPoint.Selected(true);
-                    //HoveredPoint = null;
+                    Dragging = true;
                     return;
                 }
 

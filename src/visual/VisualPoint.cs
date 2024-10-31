@@ -7,27 +7,38 @@ namespace selfdrivingcar.src.visual
     internal class VisualPoint : VisualBase<Ellipse>
     {
         private readonly Point _point;
+        private float Size = 18;
         private static readonly SolidColorBrush DefaultFillColor = Brushes.Black;
         private static readonly SolidColorBrush DefaultStrokeColor = Brushes.Black;
         private bool selected = false;
         private bool hovered = false; 
 
-        public VisualPoint(Point point, Canvas canvas): base(canvas)
+        public VisualPoint(Point point, Canvas canvas, float size = 18) : base(canvas)
         {
             _point = point;
+            Size = size;
         }
 
         public Point GetPoint() => _point;
 
-        public void Draw(int size = 18, SolidColorBrush? color = null, int strokeThickness = 0, SolidColorBrush? strokeColor = null)
+        public void UpdatePosition(Point p)
         {
-            float rad = size / 2;
+            _point.coord.X = p.coord.X;
+            _point.coord.Y = p.coord.Y;
+
+            float rad = Size / 2;
+            Canvas.SetLeft(shape, this._point.coord.X - rad);
+            Canvas.SetTop(shape, this._point.coord.Y - rad);
+        }
+        public void Draw(SolidColorBrush? color = null, int strokeThickness = 0, SolidColorBrush? strokeColor = null)
+        {
+            float rad = Size / 2;
 
             shape = new Ellipse()
             {
                 Fill = color ?? DefaultFillColor,
-                Width = size,
-                Height = size,
+                Width = Size,
+                Height = Size,
                 RenderTransformOrigin = new System.Windows.Point(0.5, 0.5),
                 StrokeThickness = 2,
                 Stroke = strokeColor ?? DefaultStrokeColor

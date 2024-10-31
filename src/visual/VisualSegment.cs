@@ -14,6 +14,8 @@ namespace selfdrivingcar.src.visual
             _segment = segment;
         }
 
+        public Segment GetSegment() => _segment;
+
         public void Draw(int width = 2, SolidColorBrush? color = null)
         {
             shape = new Line()
@@ -29,6 +31,18 @@ namespace selfdrivingcar.src.visual
 
             AddToCanvas();
         }
+
+        public void UpdatePosition()
+        {
+            if (shape != null)
+            {
+                shape.X1 = _segment.PointA.coord.X;
+                shape.Y1 = _segment.PointA.coord.Y;
+                shape.X2 = _segment.PointB.coord.X;
+                shape.Y2 = _segment.PointB.coord.Y;
+            }
+        }
+
         public void UnDraw() => RemoveFromCanvas();
         
     }
