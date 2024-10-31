@@ -4,18 +4,15 @@ using System.Windows.Shapes;
 
 namespace selfdrivingcar.src.visual
 {
-    internal class VisualPoint
+    internal class VisualPoint : VisualBase<Ellipse>
     {
         private readonly Point _point;
-        private readonly Canvas _canvas;
-        private Ellipse? ellipse;
         private static readonly SolidColorBrush DefaultFillColor = Brushes.Black;
         private static readonly SolidColorBrush DefaultStrokeColor = Brushes.Black;
 
-        public VisualPoint(Point point, Canvas canvas)
+        public VisualPoint(Point point, Canvas canvas): base(canvas)
         {
             _point = point;
-            _canvas = canvas;
         }
 
         public Point GetPoint() => _point;
@@ -24,7 +21,7 @@ namespace selfdrivingcar.src.visual
         {
             float rad = size / 2;
 
-            ellipse = new Ellipse()
+            shape = new Ellipse()
             {
                 Fill = color ?? DefaultFillColor,
                 Width = size,
@@ -33,40 +30,38 @@ namespace selfdrivingcar.src.visual
                 StrokeThickness = 2,
                 Stroke = strokeColor ?? DefaultStrokeColor
             };
-            Canvas.SetLeft(ellipse, this._point.coord.X - rad);
-            Canvas.SetTop(ellipse, this._point.coord.Y - rad);
+            Canvas.SetLeft(shape, this._point.coord.X - rad);
+            Canvas.SetTop(shape, this._point.coord.Y - rad);
 
             AddToCanvas();
         }
 
         public void Selected()
         {
-            if (ellipse != null)
+            if (shape != null)
             {
-                ellipse.StrokeThickness = 2;
-                ellipse.Stroke = Brushes.Yellow;
+                shape.StrokeThickness = 2;
+                shape.Stroke = Brushes.Yellow;
             }
         }
 
         public void Hover()
         {
-            if (ellipse is not null)
+            if (shape is not null)
             {
-                ellipse.Fill = Brushes.OrangeRed;
+                shape.Fill = Brushes.OrangeRed;
             }
         }
         public void RestoreDefaultStyle()
         {
-            if (ellipse is not null) {
-                this.ellipse.Fill = DefaultFillColor;
-                this.ellipse.Stroke = DefaultStrokeColor;
+            if (shape is not null) {
+                this.shape.Fill = DefaultFillColor;
+                this.shape.Stroke = DefaultStrokeColor;
             }
         }
         public void UnDraw() => RemoveFromCanvas();
         public void Reset() { UnDraw(); Draw(); }
 
-        public void AddToCanvas() => _canvas.Children.Add(ellipse);
-        public void RemoveFromCanvas() => _canvas.Children.Remove(ellipse);
     }
 }
 
