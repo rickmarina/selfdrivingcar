@@ -12,7 +12,7 @@
             <RowDefinition></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Background="DarkGoldenrod">
-            <Button Content="Add Point" Width="100" Height="25"  ></Button>
+            <Button Content="Add Point" Width="100" Height="25" Click="Button_Click"  ></Button>
             <Label Name="fps" Content="FPS:"/>
             <Label Name="fpsValue" Content="-"/>
         </StackPanel>

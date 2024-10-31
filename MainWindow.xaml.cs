@@ -45,5 +45,10 @@ public partial class MainWindow : Window
         _visualGraph.Draw();
     }
 
-    
+    private void Button_Click(object sender, RoutedEventArgs e)
+    {
+        int idx = Random.Shared.Next(_visualGraph.VisualPoints.Count);
+        _visualGraph.RemovePoint(_visualGraph.VisualPoints[idx].GetPoint());
+            
+    }
 }

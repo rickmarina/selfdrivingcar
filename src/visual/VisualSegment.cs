@@ -31,7 +31,8 @@ namespace selfdrivingcar.src.visual
                 X1 = _segment.PointA.coord.X,
                 Y1 = _segment.PointA.coord.Y,
                 X2 = _segment.PointB.coord.X,
-                Y2 = _segment.PointB.coord.Y
+                Y2 = _segment.PointB.coord.Y,
+                StrokeDashArray = [4,2]
             };
 
             AddToCanvas();

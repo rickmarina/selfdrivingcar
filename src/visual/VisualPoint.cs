@@ -39,14 +39,21 @@ namespace selfdrivingcar.src.visual
             AddToCanvas();
         }
 
-        public void DrawSelected()
+        public void Selected()
         {
-            Draw(strokeThickness: 2, strokeColor: Brushes.Yellow);
+            if (ellipse != null)
+            {
+                ellipse.StrokeThickness = 2;
+                ellipse.Stroke = Brushes.Yellow;
+            }
         }
 
-        public void DrawHovered()
+        public void Hover()
         {
-            Draw(color: Brushes.Orange);
+            if (ellipse is not null)
+            {
+                ellipse.Fill = Brushes.OrangeRed;
+            }
         }
         public void RestoreDefaultStyle()
         {

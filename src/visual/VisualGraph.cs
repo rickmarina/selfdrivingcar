@@ -12,6 +12,7 @@ namespace selfdrivingcar.src.visual
         private readonly Canvas _canvas;
         public List<VisualPoint> VisualPoints { get; set; }
         public List<VisualSegment> VisualSegments { get; set; }
+
         private VisualPoint? SelectedPoint;
         private VisualPoint? HoveredPoint;
 
@@ -24,8 +25,11 @@ namespace selfdrivingcar.src.visual
             VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, canvas)).ToList();
 
             this._canvas.MouseDown += _canvas_MouseDown;
+            this._canvas.MouseUp += _canvas_MouseUp;
             this._canvas.MouseMove += _canvas_MouseMove;
         }
+
+        
 
         private void _canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
@@ -39,32 +43,48 @@ namespace selfdrivingcar.src.visual
             if (nearest is not null && !nearest.Equals(SelectedPoint))
             {
                 HoveredPoint = nearest;
-                HoveredPoint.DrawHovered();
-
+                HoveredPoint.Hover();
             }
+            else
+            {
+                HoveredPoint = null;
+            }
+
+        }
+        private void _canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
             
         }
-
         private void _canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Debug.WriteLine($"mouse down!");
-            var position = e.GetPosition(this._canvas);
-            var mouse = new Point((float)position.X, (float)position.Y);
-
-            var nearest = Utils.GetNearestPoint(mouse, VisualPoints, 30);
-            SelectedPoint?.Reset();
-            HoveredPoint = null;
-            if (nearest is not null)
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Right) // RIGHT CLICK (remove hovered point)
             {
-                SelectedPoint = nearest;
-                SelectedPoint.DrawSelected();
-                return;
+                if (HoveredPoint is not null)
+                {
+                    RemovePoint(HoveredPoint.GetPoint());
+                }
             }
+            if (e.ChangedButton == System.Windows.Input.MouseButton.Left) //LEFT CLICK (new points)
+            {  
+                var position = e.GetPosition(this._canvas);
+                var mouse = new Point((float)position.X, (float)position.Y);
 
-            TryAddPoint(mouse);
+                var nearest = Utils.GetNearestPoint(mouse, VisualPoints, 30);
+                SelectedPoint?.Reset();
+                HoveredPoint = null;
+                if (nearest is not null)
+                {
+                    SelectedPoint = nearest;
+                    SelectedPoint.Selected();
+                    return;
+                }
 
-            SelectedPoint = this.VisualPoints.Last();
-            SelectedPoint.DrawSelected();
+                TryAddPoint(mouse);
+
+                SelectedPoint = this.VisualPoints.Last();
+                SelectedPoint.Selected();
+            }
 
         }
 
@@ -80,7 +100,7 @@ namespace selfdrivingcar.src.visual
                 point.Draw();
             }
 
-            SelectedPoint?.DrawSelected();
+            SelectedPoint?.Selected();
         }
 
         public void UnDraw()
@@ -153,9 +173,12 @@ namespace selfdrivingcar.src.visual
                     RemoveSegment(s);
                 }
 
-                var remove = this.VisualPoints[idx]; 
-                this.VisualPoints.RemoveAt(idx);
-                remove.RemoveFromCanvas();
+                var remove = this.VisualPoints.FirstOrDefault(x=> x.GetPoint().Equals(point)); 
+                if (remove is not null) { 
+                    remove.RemoveFromCanvas();
+                    this.VisualPoints.Remove(remove);
+                    _canvas.UpdateLayout();
+                }
             }
         }
 
