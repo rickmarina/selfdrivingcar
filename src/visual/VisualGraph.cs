@@ -97,6 +97,10 @@ namespace selfdrivingcar.src.visual
 
                 TryAddPoint(mouse);
 
+                if (SelectedPoint is not null)
+                {
+                    TryAddSegment(new Segment(SelectedPoint.GetPoint(), mouse));
+                }
                 SelectedPoint = this.VisualPoints.Last();
                 SelectedPoint.Selected(true);
             }

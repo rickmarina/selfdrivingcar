@@ -10,6 +10,8 @@ namespace selfdrivingcar.src.visual
         private float Size = 18;
         private static readonly SolidColorBrush DefaultFillColor = Brushes.Black;
         private static readonly SolidColorBrush DefaultStrokeColor = Brushes.Black;
+        private static readonly SolidColorBrush DefaultStrokeColorSelected = Brushes.Yellow;
+        private static readonly SolidColorBrush DefaultFillColorHovered = Brushes.OrangeRed;
         private bool selected = false;
         private bool hovered = false; 
 
@@ -56,7 +58,7 @@ namespace selfdrivingcar.src.visual
                 if (active) { 
                     selected = true; 
                     shape.StrokeThickness = 2;
-                    shape.Stroke = Brushes.Yellow;
+                    shape.Stroke = DefaultStrokeColorSelected;
                 } else
                 {
                     selected = false;
@@ -75,7 +77,7 @@ namespace selfdrivingcar.src.visual
                 if (active)
                 {
                     hovered = true;
-                    shape.Fill = Brushes.OrangeRed;
+                    shape.Fill = DefaultFillColorHovered;
                 } else
                 {
                     hovered = false; 
