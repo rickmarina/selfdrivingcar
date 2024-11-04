@@ -13,8 +13,10 @@ namespace selfdrivingcar.src.visual
         public List<VisualPoint> VisualPoints { get; set; }
         public List<VisualSegment> VisualSegments { get; set; }
 
-        private VisualPoint? SelectedPoint;
-        private VisualPoint? HoveredPoint;
+        private Point? MousePosition = null; // mouse position on the canvas
+        private VisualPoint? SelectedPoint; // point selected
+        private VisualPoint? HoveredPoint; // point hovered
+        private VisualSegment? IntentionSegment; // segment display intention if any point is selected and mouse is moving
         private bool Dragging = false;
 
         public VisualGraph(Canvas canvas, Graph graph)
@@ -24,6 +26,9 @@ namespace selfdrivingcar.src.visual
 
             VisualPoints = _graph.Points.Select(x=> new VisualPoint(x, canvas)).ToList();
             VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, canvas)).ToList();
+            
+            IntentionSegment = new VisualSegment(new Segment(new Point(0, 0), new Point(0,0)), _canvas);
+            IntentionSegment.Draw(strokedasharray: [4,2]); 
 
             this._canvas.MouseDown += _canvas_MouseDown;
             this._canvas.MouseUp += _canvas_MouseUp;
@@ -35,9 +40,9 @@ namespace selfdrivingcar.src.visual
         private void _canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
             var position = e.GetPosition(this._canvas);
-            var mouse = new Point((float)position.X, (float)position.Y);
+            MousePosition = new Point((float)position.X, (float)position.Y);
 
-            var nearest = Utils.GetNearestPoint(mouse, VisualPoints, 30);
+            var nearest = Utils.GetNearestPoint(MousePosition, VisualPoints, 30);
 
             if (nearest is not null)
             {
@@ -53,7 +58,7 @@ namespace selfdrivingcar.src.visual
 
             if (Dragging)
             {
-                SelectedPoint!.UpdatePosition(mouse);
+                SelectedPoint!.UpdatePosition(MousePosition);
                 foreach (var seg in VisualSegments)
                 {
                     if (seg.GetSegment().Includes(SelectedPoint.GetPoint()))
@@ -63,7 +68,17 @@ namespace selfdrivingcar.src.visual
                 }
             }
 
+            if (SelectedPoint is not null && IntentionSegment is not null)
+            {
+                IntentionSegment.GetSegment().PointA = SelectedPoint.GetPoint();
+                IntentionSegment.GetSegment().PointB = HoveredPoint is not null ? HoveredPoint.GetPoint() :  MousePosition;
+                IntentionSegment.UpdatePosition();
+            } else
+            {
+                IntentionSegment?.ResetToOrigin();
+            }
         }
+
         private void _canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             Dragging = false;
@@ -79,13 +94,15 @@ namespace selfdrivingcar.src.visual
                     if (SelectedPoint is not null && SelectedPoint.GetPoint().Equals(HoveredPoint.GetPoint()))
                         SelectedPoint = null;
                     HoveredPoint = null;
+                } else
+                {
+                    SelectedPoint?.Selected(false);
+                    SelectedPoint = null;
                 }
+                
             }
             if (e.ChangedButton == System.Windows.Input.MouseButton.Left) //LEFT CLICK (new points)
             {  
-                var position = e.GetPosition(this._canvas);
-                var mouse = new Point((float)position.X, (float)position.Y);
-
                 SelectedPoint?.Selected(false);
                 if (HoveredPoint is not null)
                 {
@@ -99,14 +116,16 @@ namespace selfdrivingcar.src.visual
                     return;
                 }
 
-                TryAddPoint(mouse);
+                if (MousePosition != null) { 
+                    TryAddPoint(MousePosition);
 
-                if (SelectedPoint is not null)
-                {
-                    TryAddSegment(new Segment(SelectedPoint.GetPoint(), mouse));
+                    if (SelectedPoint is not null)
+                    {
+                        TryAddSegment(new Segment(SelectedPoint.GetPoint(), MousePosition));
+                    }
+                    SelectedPoint = this.VisualPoints.Last();
+                    SelectedPoint.Selected(true);
                 }
-                SelectedPoint = this.VisualPoints.Last();
-                SelectedPoint.Selected(true);
             }
 
         }

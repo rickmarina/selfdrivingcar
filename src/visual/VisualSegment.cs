@@ -16,7 +16,7 @@ namespace selfdrivingcar.src.visual
 
         public Segment GetSegment() => _segment;
 
-        public void Draw(int width = 2, SolidColorBrush? color = null)
+        public void Draw(int width = 2, SolidColorBrush? color = null, DoubleCollection? strokedasharray = null)
         {
             shape = new Line()
             {
@@ -26,8 +26,12 @@ namespace selfdrivingcar.src.visual
                 Y1 = _segment.PointA.coord.Y,
                 X2 = _segment.PointB.coord.X,
                 Y2 = _segment.PointB.coord.Y,
-                StrokeDashArray = [4,2]
             };
+            
+            if (strokedasharray != null )
+            {
+                shape.StrokeDashArray = strokedasharray;
+            }
 
             AddToCanvas();
         }
@@ -44,6 +48,17 @@ namespace selfdrivingcar.src.visual
         }
 
         public void UnDraw() => RemoveFromCanvas();
+
+        public void ResetToOrigin()
+        {
+            if (shape != null)
+            {
+                shape.X1 = 0;
+                shape.Y1 = 0;
+                shape.X2 = 0;
+                shape.Y2 = 0;
+            }
+        }
         
     }
 }
