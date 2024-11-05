@@ -1,8 +1,6 @@
 ﻿using selfdrivingcar.src.math;
-using System;
 using System.Diagnostics;
 using System.Windows.Controls;
-using System.Windows.Media;
 
 namespace selfdrivingcar.src.visual
 {
@@ -30,11 +28,11 @@ namespace selfdrivingcar.src.visual
             IntentionSegment = new VisualSegment(new Segment(new Point(0, 0), new Point(0,0)), _canvas);
             IntentionSegment.Draw(strokedasharray: [4,2]); 
 
+            //Canvas events
             this._canvas.MouseDown += _canvas_MouseDown;
             this._canvas.MouseUp += _canvas_MouseUp;
             this._canvas.MouseMove += _canvas_MouseMove;
         }
-
         
 
         private void _canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
@@ -88,17 +86,16 @@ namespace selfdrivingcar.src.visual
             Debug.WriteLine($"mouse down!");
             if (e.ChangedButton == System.Windows.Input.MouseButton.Right) // RIGHT CLICK (remove hovered point)
             {
-                if (HoveredPoint is not null)
-                {
-                    RemovePoint(HoveredPoint.GetPoint());
-                    if (SelectedPoint is not null && SelectedPoint.GetPoint().Equals(HoveredPoint.GetPoint()))
-                        SelectedPoint = null;
-                    HoveredPoint = null;
-                } else
+                if (SelectedPoint is not null)
                 {
                     SelectedPoint?.Selected(false);
                     SelectedPoint = null;
                 }
+                else if (HoveredPoint is not null)
+                {
+                    RemovePoint(HoveredPoint.GetPoint());
+                    HoveredPoint = null;
+                } 
                 
             }
             if (e.ChangedButton == System.Windows.Input.MouseButton.Left) //LEFT CLICK (new points)
@@ -127,7 +124,6 @@ namespace selfdrivingcar.src.visual
                     SelectedPoint.Selected(true);
                 }
             }
-
         }
 
         public void Draw()
@@ -168,7 +164,7 @@ namespace selfdrivingcar.src.visual
                 newPoint.Draw();
                 return true;
             }
-            
+
             return false;
         }
 
@@ -185,6 +181,7 @@ namespace selfdrivingcar.src.visual
             }
             return false;
         }
+
         public void RemoveSegment(int index)
         {
             this._graph.RemoveSegment(index);
