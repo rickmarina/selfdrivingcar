@@ -39,14 +39,19 @@ namespace selfdrivingcar.src.visual
             this._canvas.MouseMove += _canvas_MouseMove;
         }
 
-        public void Load(RootJson root)
+        public void Load(RootJson? root)
         {
-            root._graph.Points.ForEach(x =>
-                TryAddPoint(new Point(x.coord.X, x.coord.Y))
-            );
-            root._graph.Segments.ForEach(x =>
-                TryAddSegment(new Segment(new Point(x.PointA.coord.X, x.PointA.coord.Y), new Point(x.PointB.coord.X, x.PointB.coord.Y)))
-            );
+            if (root is not null) { 
+                root._graph.Points.ForEach(x =>
+                    TryAddPoint(new Point(x.coord.X, x.coord.Y))
+                );
+                root._graph.Segments.ForEach(x => {
+                    var pA = VisualPoints.FirstOrDefault(v => v.GetPoint().Equals(new Point(x.PointA.coord.X, x.PointA.coord.Y)));
+                    var pB = VisualPoints.FirstOrDefault(v => v.GetPoint().Equals(new Point(x.PointB.coord.X, x.PointB.coord.Y)));
+                    TryAddSegment(new Segment(pA.GetPoint(), pB.GetPoint()));
+                }
+                );
+            }
         }
         
 
