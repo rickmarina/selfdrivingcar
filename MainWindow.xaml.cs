@@ -14,13 +14,9 @@ namespace selfdrivingcar;
 public partial class MainWindow : Window
 {
     private System.Windows.Point lastMousePosition;
-    private bool isDragging;
-    private double TotalZoom = 0;
-    private double MaxZoom = 5;
-    private double MinZoom = -5;
 
-    private VisualGraph _visualGraph;
-    private ViewPort _viewPort; 
+    private VisualGraph? _visualGraph;
+    private ViewPort? _viewPort; 
 
     public MainWindow()
     {
@@ -35,8 +31,11 @@ public partial class MainWindow : Window
 
     private void _viewPort_ZoomChanged(object? sender, float e)
     {
-        scaleTransform.ScaleX = 1 / _viewPort.Zoom;
-        scaleTransform.ScaleY = 1 / _viewPort.Zoom;
+        if (_viewPort is not null)
+        {
+            scaleTransform.ScaleX = 1 / _viewPort.Zoom;
+            scaleTransform.ScaleY = 1 / _viewPort.Zoom;
+        }
     }
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
