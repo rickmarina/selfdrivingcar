@@ -1,5 +1,6 @@
 ﻿using selfdrivingcar.src.math;
 using selfdrivingcar.src.visual;
+using System.Diagnostics;
 using System.Numerics;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -10,16 +11,12 @@ namespace selfdrivingcar.src
     {
         private Segment _skeleton;
         private readonly int _width;
-
         private PolygonG _polygon;
 
         public Envelope(Segment skeleton, int width, Canvas canvas) : base(canvas)
         {
             _skeleton = skeleton;
             _width = width;
-
-            
-
         }
 
         private PolygonG GeneratePolygon()
@@ -58,6 +55,8 @@ namespace selfdrivingcar.src
             {
                 shape.Points.Add(new System.Windows.Point(p.coord.X, p.coord.Y));
             }
+            shape.IsEnabled = false;
+            shape.IsHitTestVisible = false;
             Canvas.SetZIndex(shape, -10);
 
             AddToCanvas();
