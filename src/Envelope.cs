@@ -31,12 +31,23 @@ namespace selfdrivingcar.src
             double alpha_cw = alpha + Math.PI / 2;
             double alpha_ccw = alpha - Math.PI / 2;
 
-            Point p1_ccw = Utils.Translate(p1, alpha_ccw, radius);
-            Point p2_ccw = Utils.Translate(p2, alpha_ccw, radius);
-            Point p2_cw = Utils.Translate(p2, alpha_cw, radius);
-            Point p1_cw = Utils.Translate(p1, alpha_cw, radius);
+            //Point p1_ccw = Utils.Translate(p1, alpha_ccw, radius);
+            //Point p2_ccw = Utils.Translate(p2, alpha_ccw, radius);
+            //Point p2_cw = Utils.Translate(p2, alpha_cw, radius);
+            //Point p1_cw = Utils.Translate(p1, alpha_cw, radius);
 
-            return new PolygonG([p1_ccw, p2_ccw, p2_cw, p1_cw]);
+            //Generate points from p1 around then continue with p2 , this way we generate a polygon that groups this two points with rounder borders
+            List<Point> roundPoints = new List<Point>();
+            double step = Math.PI / 10;
+            for(double i=alpha_ccw; i<= alpha_cw; i+= step)
+            {
+                roundPoints.Add(Utils.Translate(p1, i, radius));
+            }
+            for (double i = alpha_ccw; i <= alpha_cw; i += step)
+            {
+                roundPoints.Add(Utils.Translate(p2, Math.PI + i, radius));
+            }
+            return new PolygonG(roundPoints);
 
         }
         
