@@ -7,6 +7,7 @@ namespace selfdrivingcar.src.visual
     internal class VisualGraph
     {
         public readonly Graph _graph;
+        private readonly ViewPort _viewPort; 
         private readonly Canvas _canvas;
         public List<VisualPoint> VisualPoints { get; set; }
         public List<VisualSegment> VisualSegments { get; set; }
@@ -17,13 +18,14 @@ namespace selfdrivingcar.src.visual
         private VisualSegment? IntentionSegment; // segment display intention if any point is selected and mouse is moving
         private bool Dragging = false;
 
-        public VisualGraph(Canvas canvas, Graph graph)
+        public VisualGraph(ViewPort viewPort, Graph graph)
         {
-            this._canvas = canvas;
+            this._viewPort = viewPort;
+            this._canvas = viewPort._canvas;
             this._graph = graph;
 
-            VisualPoints = _graph.Points.Select(x=> new VisualPoint(x, canvas)).ToList();
-            VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, canvas)).ToList();
+            VisualPoints = _graph.Points.Select(x=> new VisualPoint(x, _canvas)).ToList();
+            VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, _canvas)).ToList();
             
             IntentionSegment = new VisualSegment(new Segment(new Point(0, 0), new Point(0,0)), _canvas);
             IntentionSegment.Draw(strokedasharray: [4,2]); 
@@ -37,10 +39,10 @@ namespace selfdrivingcar.src.visual
 
         private void _canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            var position = e.GetPosition(this._canvas);
+            var position = this._viewPort.GetMouse(e);
             MousePosition = new Point((float)position.X, (float)position.Y);
 
-            var nearest = Utils.GetNearestPoint(MousePosition, VisualPoints, 30);
+            var nearest = Utils.GetNearestPoint(MousePosition, VisualPoints, 30 * this._viewPort.Zoom);
 
             if (nearest is not null)
             {
