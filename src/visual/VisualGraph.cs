@@ -1,5 +1,6 @@
 ﻿using selfdrivingcar.src.math;
 using System.Diagnostics;
+using System.Text.Json.Serialization;
 using System.Windows.Controls;
 
 namespace selfdrivingcar.src.visual
@@ -9,7 +10,9 @@ namespace selfdrivingcar.src.visual
         public readonly Graph _graph;
         private readonly ViewPort _viewPort; 
         private readonly Canvas _canvas;
+        [JsonIgnore]
         public List<VisualPoint> VisualPoints { get; set; }
+        [JsonIgnore]
         public List<VisualSegment> VisualSegments { get; set; }
 
         private Point? MousePosition = null; // mouse position on the canvas
@@ -34,6 +37,16 @@ namespace selfdrivingcar.src.visual
             this._canvas.MouseDown += _canvas_MouseDown;
             this._canvas.MouseUp += _canvas_MouseUp;
             this._canvas.MouseMove += _canvas_MouseMove;
+        }
+
+        public void Load(RootJson root)
+        {
+            root._graph.Points.ForEach(x =>
+                TryAddPoint(new Point(x.coord.X, x.coord.Y))
+            );
+            root._graph.Segments.ForEach(x =>
+                TryAddSegment(new Segment(new Point(x.PointA.coord.X, x.PointA.coord.Y), new Point(x.PointB.coord.X, x.PointB.coord.Y)))
+            );
         }
         
 
@@ -231,6 +244,9 @@ namespace selfdrivingcar.src.visual
 
             this.VisualPoints.Clear();
             this.VisualSegments.Clear();
+
+            SelectedPoint = null;
+            HoveredPoint = null;
         }
     }
 }

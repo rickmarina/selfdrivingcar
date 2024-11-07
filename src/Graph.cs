@@ -13,6 +13,10 @@ namespace selfdrivingcar.src
         public List<Point> Points { get; set; }
         public List<Segment> Segments { get; set; }
 
+        public Graph() { 
+            Points = new List<Point>();
+            Segments = new List<Segment>();
+        }
         public Graph(List<Point> points, List<Segment> segments)
         {
             this.Points = points; 

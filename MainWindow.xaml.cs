@@ -1,6 +1,9 @@
 ﻿using selfdrivingcar.src;
 using selfdrivingcar.src.visual;
 using System.Diagnostics;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -40,25 +43,14 @@ public partial class MainWindow : Window
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        Point? p1 = new Point(200, 200);
-        Point p2 = new Point(500, 200);
-        Point p3 = new Point(400, 400);
-        Point p4 = new Point(100, 300);
-
-        Segment s1 = new Segment(p1, p2);
-        Segment s2 = new Segment(p1, p3);
-        Segment s3 = new Segment(p1, p4);
-        Segment s4 = new Segment(p2, p3);
-
         _viewPort = new ViewPort(MapCanvas);
-        Graph _graph = new Graph([p1, p2, p3, p4], [s1, s2, s3, s4]);
+        Graph _graph = new Graph([], []);
         _visualGraph = new VisualGraph(_viewPort, _graph);
 
         _viewPort.ZoomChanged += _viewPort_ZoomChanged;
         _viewPort.OffsetChanged += _viewPort_OffsetChanged;
 
         _visualGraph.Draw();
-        Debug.WriteLine($"canvas [{MapCanvas.ActualWidth}x{MapCanvas.ActualHeight}");
 
         _viewPort.SetOffset(new System.Numerics.Vector2((float)-MapCanvas.ActualWidth / 2, (float)-MapCanvas.ActualHeight / 2));
 
@@ -67,11 +59,38 @@ public partial class MainWindow : Window
 
     }
 
-    private void Button_Click(object sender, RoutedEventArgs e)
+    private void Dispose_Click(object sender, RoutedEventArgs e)
     {
+        _visualGraph?.Dispose();
+    }
+    private void Save_Click(object sender, RoutedEventArgs e)
+    {
+        var options = new JsonSerializerOptions
+        {
+            IncludeFields = true  // Incluye los campos
+        };
+
+        string json = string.Empty;
+        if (_visualGraph != null) 
+            json = JsonSerializer.Serialize(_visualGraph, options);
+
+        File.WriteAllText(Path.GetDirectoryName(Environment.ProcessPath) + @"\data.json", json);
 
     }
+    private void Load_Click(object sender, RoutedEventArgs e)
+    {
 
+        string json = File.ReadAllText(Path.GetDirectoryName(Environment.ProcessPath) + @"\data.json");
+
+        RootJson? graphJson = JsonSerializer.Deserialize<RootJson>(json);
+
+        if (graphJson is not null) { 
+            _visualGraph?.Dispose();
+            _visualGraph?.Load(graphJson);
+        }
+
+
+    }
     private void MapCanvas_Loaded(object sender, RoutedEventArgs e)
     {
         Debug.WriteLine($"canvas loaded [{MapCanvas.ActualWidth}x{MapCanvas.ActualHeight}");

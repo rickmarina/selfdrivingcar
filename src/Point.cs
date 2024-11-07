@@ -4,7 +4,7 @@ namespace selfdrivingcar.src
 {
     internal class Point
     {
-        public Vector2 coord; 
+        public Vector2 coord { get; set; } 
 
         public Point(float x, float y)
         {

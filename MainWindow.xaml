@@ -11,8 +11,10 @@
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition x:Name="rowCanvas" Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Background="DarkGoldenrod">
-            <Button Content="Add Point" Width="100" Height="25" Click="Button_Click"  ></Button>
+        <StackPanel Orientation="Horizontal" Background="DarkGoldenrod" Panel.ZIndex="1">
+            <Button Content="Dispose" Width="100" Height="25" Click="Dispose_Click"  ></Button>
+            <Button Content="Save" Width="100" Height="25" Click="Save_Click"  ></Button>
+            <Button Content="Load" Width="100" Height="25" Click="Load_Click"  ></Button>
             <Label Name="fps" Content="FPS:"/>
             <Label Name="fpsValue" Content="-"/>
         </StackPanel>

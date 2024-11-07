@@ -8,9 +8,6 @@ namespace selfdrivingcar.src
         public Point PointA { get; set; }
         public Point PointB { get; set; }
 
-        public Line? line;
-        public static readonly SolidColorBrush DefaultFillColor = Brushes.Black;
-
         public Segment(Point pointA, Point pointB) {
             PointA = pointA;
             PointB = pointB;

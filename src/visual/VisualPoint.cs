@@ -25,8 +25,7 @@ namespace selfdrivingcar.src.visual
 
         public void UpdatePosition(Point p)
         {
-            _point.coord.X = p.coord.X;
-            _point.coord.Y = p.coord.Y;
+            _point.coord = p.coord;
 
             float rad = Size / 2;
             Canvas.SetLeft(shape, this._point.coord.X - rad);
