@@ -5,18 +5,19 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:selfdrivingcar"
         mc:Ignorable="d"
-        Title="Map self driving car" Height="450" Width="800" Loaded="Window_Loaded">
+        Title="Map self driving car" Height="600" Width="1200" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
-            <RowDefinition></RowDefinition>
+            <RowDefinition x:Name="rowCanvas" Height="*"></RowDefinition>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal" Background="DarkGoldenrod">
             <Button Content="Add Point" Width="100" Height="25" Click="Button_Click"  ></Button>
             <Label Name="fps" Content="FPS:"/>
             <Label Name="fpsValue" Content="-"/>
         </StackPanel>
-        <Canvas Grid.Row="1" x:Name="MapCanvas" Background="ForestGreen" ClipToBounds="False" RenderTransformOrigin="0,0" Width="10000" Height="10000"
+            <Canvas Grid.Row="1" x:Name="MapCanvas" Background="ForestGreen" ClipToBounds="True" RenderTransformOrigin="0.5,0.5" Width="10000" Height="10000"
+                    Loaded="MapCanvas_Loaded"
                 >
                 <Canvas.RenderTransform>
                     <!-- Transformaciones para el zoom y el desplazamiento -->
@@ -25,6 +26,6 @@
                         <TranslateTransform x:Name="translateTransform" X="0" Y="0"/>
                     </TransformGroup>
                 </Canvas.RenderTransform>
-        </Canvas>
+            </Canvas>
     </Grid>
 </Window>
