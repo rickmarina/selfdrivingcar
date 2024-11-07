@@ -1,11 +1,12 @@
-﻿using System.Windows.Controls;
+﻿using System.Diagnostics;
+using System.Windows.Controls;
 using System.Windows.Shapes;
 
 namespace selfdrivingcar.src.visual
 {
     internal abstract class VisualBase<T> where T : Shape
     {
-        private bool addedToCanvas = false;
+        public bool addedToCanvas { get; private set; } = false;
         protected readonly Canvas _canvas;
         protected T? shape;
 
@@ -25,7 +26,7 @@ namespace selfdrivingcar.src.visual
         public void RemoveFromCanvas()
         {
             if (!addedToCanvas)
-                throw new InvalidOperationException("Point is already removed from canvas");
+                Debug.WriteLine("Point is already removed from canvas");
 
             addedToCanvas = false;
             _canvas.Children.Remove(shape);

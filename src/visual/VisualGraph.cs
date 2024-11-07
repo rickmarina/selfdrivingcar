@@ -1,6 +1,7 @@
 ﻿using selfdrivingcar.src.math;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
+using System.Windows;
 using System.Windows.Controls;
 
 namespace selfdrivingcar.src.visual
@@ -21,7 +22,7 @@ namespace selfdrivingcar.src.visual
         private VisualSegment? IntentionSegment; // segment display intention if any point is selected and mouse is moving
         private bool Dragging = false;
 
-        public VisualGraph(ViewPort viewPort, Graph graph)
+        public VisualGraph(ViewPort viewPort, Graph graph, Window win)
         {
             this._viewPort = viewPort;
             this._canvas = viewPort._canvas;
@@ -37,8 +38,8 @@ namespace selfdrivingcar.src.visual
             this._canvas.MouseDown += _canvas_MouseDown;
             this._canvas.MouseUp += _canvas_MouseUp;
             this._canvas.MouseMove += _canvas_MouseMove;
+            
         }
-
         public void Load(RootJson? root)
         {
             if (root is not null) { 
@@ -51,6 +52,9 @@ namespace selfdrivingcar.src.visual
                     TryAddSegment(new Segment(pA.GetPoint(), pB.GetPoint()));
                 }
                 );
+
+                //Envelope envelope = new Envelope(VisualSegments[0].GetSegment(), 20, _canvas);
+                //envelope.Draw();
             }
         }
         
@@ -99,6 +103,7 @@ namespace selfdrivingcar.src.visual
 
         private void _canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            Debug.WriteLine($"Mouse UP");
             Dragging = false;
         }
         private void _canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -217,7 +222,7 @@ namespace selfdrivingcar.src.visual
                 var remove = this.VisualSegments[idx];
                 this.VisualSegments.RemoveAt(idx);
 
-                remove.RemoveFromCanvas();
+                remove.UnDraw();
             }
         }
 

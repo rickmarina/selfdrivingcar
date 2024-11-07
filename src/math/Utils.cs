@@ -31,5 +31,15 @@ namespace selfdrivingcar.src.math
         {
             return Vector2.Distance(pA.coord, pB.coord);
         }
+
+        public static Point Translate(Point loc, double angle, int offset)
+        {
+            return new Point((float)(loc.coord.X + Math.Cos(angle) * offset), (float)(loc.coord.Y + Math.Sin(angle) * offset));
+        }
+
+        public static double Angle(Point loc)
+        {
+            return Math.Atan2(loc.coord.Y, loc.coord.X);
+        }
     }
 }

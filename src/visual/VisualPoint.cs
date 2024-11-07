@@ -44,6 +44,7 @@ namespace selfdrivingcar.src.visual
                 StrokeThickness = 2,
                 Stroke = strokeColor ?? DefaultStrokeColor
             };
+            Canvas.SetZIndex(shape, 999);
             Canvas.SetLeft(shape, this._point.coord.X - rad);
             Canvas.SetTop(shape, this._point.coord.Y - rad);
 

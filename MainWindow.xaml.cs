@@ -45,7 +45,7 @@ public partial class MainWindow : Window
     {
         _viewPort = new ViewPort(MapCanvas);
         Graph _graph = new Graph([], []);
-        _visualGraph = new VisualGraph(_viewPort, _graph);
+        _visualGraph = new VisualGraph(_viewPort, _graph, mainWindow);
 
         _viewPort.ZoomChanged += _viewPort_ZoomChanged;
         _viewPort.OffsetChanged += _viewPort_OffsetChanged;
