@@ -1,4 +1,5 @@
 ﻿using selfdrivingcar.src.math;
+using selfdrivingcar.src.world;
 using System.Diagnostics;
 using System.Text.Json.Serialization;
 using System.Windows;
@@ -21,17 +22,18 @@ namespace selfdrivingcar.src.visual
         private VisualPoint? HoveredPoint; // point hovered
         private VisualSegment? IntentionSegment; // segment display intention if any point is selected and mouse is moving
         private bool Dragging = false;
-
-        public VisualGraph(ViewPort viewPort, Graph graph, Window win)
+        private readonly WorldSettings _settings;
+        public VisualGraph(ViewPort viewPort, Graph graph, WorldSettings settings)
         {
             this._viewPort = viewPort;
             this._canvas = viewPort._canvas;
             this._graph = graph;
+            this._settings = settings;
 
             VisualPoints = _graph.Points.Select(x=> new VisualPoint(x, _canvas)).ToList();
-            VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, _canvas)).ToList();
+            VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, _canvas, settings)).ToList();
             
-            IntentionSegment = new VisualSegment(new Segment(new Point(0, 0), new Point(0,0)), _canvas);
+            IntentionSegment = new VisualSegment(new Segment(new Point(0, 0), new Point(0,0)), _canvas, settings);
             IntentionSegment.Draw(strokedasharray: [4,2]); 
 
             //Canvas events
@@ -198,7 +200,7 @@ namespace selfdrivingcar.src.visual
             bool success = _graph.TryAddSegment(segment);
             if (success)
             {
-                var newSegment = new VisualSegment(segment, _canvas);
+                var newSegment = new VisualSegment(segment, _canvas, _settings);
                 VisualSegments.Add(newSegment);
                 newSegment.Draw();
 

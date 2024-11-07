@@ -1,4 +1,5 @@
-﻿using System.Windows.Controls;
+﻿using selfdrivingcar.src.world;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -10,18 +11,16 @@ namespace selfdrivingcar.src.visual
         private static readonly SolidColorBrush DefaultStrokeColor = Brushes.Black;
         private Envelope _envelope;
 
-        public VisualSegment(Segment segment, Canvas canvas) : base(canvas)
+        public VisualSegment(Segment segment, Canvas canvas, WorldSettings settings) : base(canvas)
         {
             _segment = segment;
-            _envelope = new Envelope(segment, 30, canvas);
+            _envelope = new Envelope(segment, settings.RoadWidth, canvas, settings.RoadRoundness);
         }
 
         public Segment GetSegment() => _segment;
 
         public void Draw(int width = 2, SolidColorBrush? color = null, DoubleCollection? strokedasharray = null)
         {
-            _envelope.Draw();
-
             shape = new Line()
             {
                 StrokeThickness = width,
@@ -37,6 +36,7 @@ namespace selfdrivingcar.src.visual
                 shape.StrokeDashArray = strokedasharray;
             }
 
+            _envelope.Draw();
 
             AddToCanvas();
         }

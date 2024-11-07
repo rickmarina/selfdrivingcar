@@ -11,12 +11,14 @@ namespace selfdrivingcar.src
     {
         private Segment _skeleton;
         private readonly int _width;
+        private readonly int _roundness;
         private PolygonG _polygon;
 
-        public Envelope(Segment skeleton, int width, Canvas canvas) : base(canvas)
+        public Envelope(Segment skeleton, int width, Canvas canvas, int roundness = 1) : base(canvas)
         {
             _skeleton = skeleton;
             _width = width;
+            _roundness = roundness;
         }
 
         private PolygonG GeneratePolygon()
@@ -38,12 +40,13 @@ namespace selfdrivingcar.src
 
             //Generate points from p1 around then continue with p2 , this way we generate a polygon that groups this two points with rounder borders
             List<Point> roundPoints = new List<Point>();
-            double step = Math.PI / 10;
-            for(double i=alpha_ccw; i<= alpha_cw; i+= step)
+            double step = Math.PI / Math.Max(1, _roundness);
+            double eps = step / 2; 
+            for(double i=alpha_ccw; i<= alpha_cw + eps; i+= step)
             {
                 roundPoints.Add(Utils.Translate(p1, i, radius));
             }
-            for (double i = alpha_ccw; i <= alpha_cw; i += step)
+            for (double i = alpha_ccw; i <= alpha_cw + eps; i += step)
             {
                 roundPoints.Add(Utils.Translate(p2, Math.PI + i, radius));
             }
