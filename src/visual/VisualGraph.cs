@@ -1,7 +1,11 @@
 ﻿using selfdrivingcar.src.math;
+using selfdrivingcar.src.world;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace selfdrivingcar.src.visual
 {
@@ -14,31 +18,39 @@ namespace selfdrivingcar.src.visual
         public List<VisualPoint> VisualPoints { get; set; }
         [JsonIgnore]
         public List<VisualSegment> VisualSegments { get; set; }
+        private List<VisualSegment> _intersectionSegments;
+        private List<VisualSegment> _roadBorders;
+        private VisualPolygon _polyRoadBorder; 
 
         private Point? MousePosition = null; // mouse position on the canvas
         private VisualPoint? SelectedPoint; // point selected
         private VisualPoint? HoveredPoint; // point hovered
         private VisualSegment? IntentionSegment; // segment display intention if any point is selected and mouse is moving
         private bool Dragging = false;
-
-        public VisualGraph(ViewPort viewPort, Graph graph)
+        private readonly WorldSettings _settings;
+        public VisualGraph(ViewPort viewPort, Graph graph, WorldSettings settings)
         {
             this._viewPort = viewPort;
             this._canvas = viewPort._canvas;
             this._graph = graph;
+            this._settings = settings;
 
             VisualPoints = _graph.Points.Select(x=> new VisualPoint(x, _canvas)).ToList();
-            VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, _canvas)).ToList();
+            VisualSegments = _graph.Segments.Select(x => new VisualSegment(x, _canvas, settings, true)).ToList();
             
-            IntentionSegment = new VisualSegment(new Segment(new Point(0, 0), new Point(0,0)), _canvas);
-            IntentionSegment.Draw(strokedasharray: [4,2]); 
+            IntentionSegment = new VisualSegment(new Segment(new Point(0, 0), new Point(0,0)), _canvas, settings, false);
+            IntentionSegment.Draw(strokedasharray: [4,2]);
+
+            _intersectionSegments = new();
+            _roadBorders = new();
+            _polyRoadBorder = new(_canvas, []);
 
             //Canvas events
             this._canvas.MouseDown += _canvas_MouseDown;
             this._canvas.MouseUp += _canvas_MouseUp;
             this._canvas.MouseMove += _canvas_MouseMove;
+            
         }
-
         public void Load(RootJson? root)
         {
             if (root is not null) { 
@@ -51,6 +63,9 @@ namespace selfdrivingcar.src.visual
                     TryAddSegment(new Segment(pA.GetPoint(), pB.GetPoint()));
                 }
                 );
+
+                //Envelope envelope = new Envelope(VisualSegments[0].GetSegment(), 20, _canvas);
+                //envelope.Draw();
             }
         }
         
@@ -76,14 +91,40 @@ namespace selfdrivingcar.src.visual
 
             if (Dragging)
             {
+                var affectedSegments = new List<VisualSegment>();
+
                 SelectedPoint!.UpdatePosition(MousePosition);
                 foreach (var seg in VisualSegments)
                 {
+                    if (Utils.DistanceFromPointToSegment(MousePosition, seg.GetSegment()) < 100)
+                    {
+                        affectedSegments.Add(seg);
+                    }
+
                     if (seg.GetSegment().Includes(SelectedPoint.GetPoint()))
                     {
                         seg.UpdatePosition();
                     }
+                    if (seg.HasEnvelope) // Reset poly segments before we break again 
+                    {
+                        seg.Envelope.UpdatePoly();
+                    }
                 }
+
+                Debug.WriteLine($"Affected segments: {affectedSegments.Count}");
+
+                // START Segments break and road line
+                // Además de saber qué segmentos contienen el punto, recuperar la distancia entre el punto que se mueve y los segmentos para saber cuales tenemos que actualizar
+
+                _roadBorders.ForEach(x => x.UnDraw());
+
+                var roadSegments = PolygonG.Union(VisualSegments.Where(x => x.HasEnvelope).Select(x => x.Envelope.Poly).ToList());
+                var roadSegmentsVisual = roadSegments.Select(x => new VisualSegment(x, _canvas, _settings, false)).ToList();
+
+                _roadBorders = roadSegmentsVisual;
+                roadSegmentsVisual.ForEach(x=> x.Draw(width: 4, color: BrushesUtils.White));
+
+                // END Segments break and road line
             }
 
             if (SelectedPoint is not null && IntentionSegment is not null)
@@ -99,6 +140,7 @@ namespace selfdrivingcar.src.visual
 
         private void _canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            Debug.WriteLine($"Mouse UP");
             Dragging = false;
         }
         private void _canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
@@ -193,9 +235,9 @@ namespace selfdrivingcar.src.visual
             bool success = _graph.TryAddSegment(segment);
             if (success)
             {
-                var newSegment = new VisualSegment(segment, _canvas);
+                var newSegment = new VisualSegment(segment, _canvas, _settings, true);
                 VisualSegments.Add(newSegment);
-                newSegment.Draw();
+                newSegment.Draw(color: BrushesUtils.White, strokedasharray: [5, 5]);
 
                 return true;
             }
@@ -217,7 +259,7 @@ namespace selfdrivingcar.src.visual
                 var remove = this.VisualSegments[idx];
                 this.VisualSegments.RemoveAt(idx);
 
-                remove.RemoveFromCanvas();
+                remove.UnDraw();
             }
         }
 

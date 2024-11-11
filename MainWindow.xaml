@@ -4,14 +4,14 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:selfdrivingcar"
-        mc:Ignorable="d"
+        mc:Ignorable="d" x:Name="mainWindow"
         Title="Map self driving car" Height="600" Width="1200" Loaded="Window_Loaded">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40"></RowDefinition>
             <RowDefinition x:Name="rowCanvas" Height="*"></RowDefinition>
         </Grid.RowDefinitions>
-        <StackPanel Orientation="Horizontal" Background="DarkGoldenrod" Panel.ZIndex="1">
+        <StackPanel Orientation="Horizontal" Background="DarkGoldenrod" Panel.ZIndex="99999">
             <Button Content="Dispose" Width="100" Height="25" Click="Dispose_Click"  ></Button>
             <Button Content="Save" Width="100" Height="25" Click="Save_Click"  ></Button>
             <Button Content="Load" Width="100" Height="25" Click="Load_Click"  ></Button>
@@ -19,7 +19,7 @@
             <Label Name="fpsValue" Content="-"/>
         </StackPanel>
             <Canvas Grid.Row="1" x:Name="MapCanvas" Background="ForestGreen" ClipToBounds="True" RenderTransformOrigin="0.5,0.5" Width="10000" Height="10000"
-                    Loaded="MapCanvas_Loaded"
+                    Loaded="MapCanvas_Loaded" Panel.ZIndex="9999" 
                 >
                 <Canvas.RenderTransform>
                     <!-- Transformaciones para el zoom y el desplazamiento -->
