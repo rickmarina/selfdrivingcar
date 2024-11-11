@@ -13,7 +13,7 @@ namespace selfdrivingcar.src
         private Segment _skeleton;
         private readonly int _width;
         private readonly int _roundness;
-        public PolygonG Poly { get; private set; }
+        public PolygonG? Poly { get; private set; }
 
         public Envelope(Segment skeleton, int width, Canvas canvas, int roundness = 1) : base(canvas)
         {

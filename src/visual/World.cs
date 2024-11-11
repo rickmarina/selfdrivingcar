@@ -1,8 +1,10 @@
-﻿using selfdrivingcar.src.world;
+﻿using Microsoft.VisualBasic;
+using selfdrivingcar.src.world;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Runtime;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Controls;
@@ -17,14 +19,17 @@ namespace selfdrivingcar.src.visual
         private VisualGraph _visualGraph;
         private readonly Canvas _canvas;
         private ScaleTransform _scale;
-        private TranslateTransform _translate; 
+        private TranslateTransform _translate;
+        private List<VisualSegment> _roadBorders = new();
+        private readonly WorldSettings _worldSettings;
 
 
         public World(Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
         {
             _canvas = canvas;
+            _worldSettings = settings;
             _viewPort = new ViewPort(_canvas);
-            _visualGraph = new VisualGraph(_viewPort, new Graph([], []), settings);
+            _visualGraph = new VisualGraph(this, _viewPort, new Graph([], []), settings);
 
             _scale = scaleT; 
             _translate = translateT;
@@ -39,7 +44,7 @@ namespace selfdrivingcar.src.visual
         }
         public VisualGraph GetVisualGraph() => this._visualGraph;
 
-        public void Load(RootJson? root)
+        public void Load(RootJson? root, bool generate)
         {
             if (root is not null)
             {
@@ -52,9 +57,31 @@ namespace selfdrivingcar.src.visual
                     _visualGraph.TryAddSegment(new Segment(pA.GetPoint(), pB.GetPoint()));
                     }
                 );
-
-                
             }
+            if (generate)
+            {
+                Generate();
+            }
+        }
+        /// <summary>
+        /// Generate the virtual world:
+        ///     1. Dynamic roads
+        ///     
+        /// </summary>
+        public void Generate()
+        {
+            // START Segments break and road line
+            // Además de saber qué segmentos contienen el punto, recuperar la distancia entre el punto que se mueve y los segmentos para saber cuales tenemos que actualizar
+
+            _roadBorders.ForEach(x => x.UnDraw());
+
+            var roadSegments = PolygonG.Union(_visualGraph.VisualSegments.Where(x => x.HasEnvelope).Select(x => x.Envelope.Poly).ToList());
+            var roadSegmentsVisual = roadSegments.Select(x => new VisualSegment(x, _canvas, _worldSettings, false)).ToList();
+
+            _roadBorders = roadSegmentsVisual;
+            roadSegmentsVisual.ForEach(x => x.Draw(width: 4, color: BrushesUtils.White));
+
+            // END Segments break and road line
         }
 
         public void Dispose()

@@ -19,7 +19,6 @@ namespace selfdrivingcar.src.visual
         [JsonIgnore]
         public List<VisualSegment> VisualSegments { get; set; }
         private List<VisualSegment> _intersectionSegments;
-        private List<VisualSegment> _roadBorders;
         private VisualPolygon _polyRoadBorder; 
 
         private Point? MousePosition = null; // mouse position on the canvas
@@ -28,8 +27,10 @@ namespace selfdrivingcar.src.visual
         private VisualSegment? IntentionSegment; // segment display intention if any point is selected and mouse is moving
         private bool Dragging = false;
         private readonly WorldSettings _settings;
-        public VisualGraph(ViewPort viewPort, Graph graph, WorldSettings settings)
+        private readonly World _world;
+        public VisualGraph(World world, ViewPort viewPort, Graph graph, WorldSettings settings)
         {
+            this._world = world;
             this._viewPort = viewPort;
             this._canvas = viewPort._canvas;
             this._graph = graph;
@@ -42,7 +43,6 @@ namespace selfdrivingcar.src.visual
             IntentionSegment.Draw(strokedasharray: [4,2]);
 
             _intersectionSegments = new();
-            _roadBorders = new();
             _polyRoadBorder = new(_canvas, []);
 
             //Canvas events
@@ -112,19 +112,8 @@ namespace selfdrivingcar.src.visual
                 }
 
                 Debug.WriteLine($"Affected segments: {affectedSegments.Count}");
-
-                // START Segments break and road line
-                // Además de saber qué segmentos contienen el punto, recuperar la distancia entre el punto que se mueve y los segmentos para saber cuales tenemos que actualizar
-
-                _roadBorders.ForEach(x => x.UnDraw());
-
-                var roadSegments = PolygonG.Union(VisualSegments.Where(x => x.HasEnvelope).Select(x => x.Envelope.Poly).ToList());
-                var roadSegmentsVisual = roadSegments.Select(x => new VisualSegment(x, _canvas, _settings, false)).ToList();
-
-                _roadBorders = roadSegmentsVisual;
-                roadSegmentsVisual.ForEach(x=> x.Draw(width: 4, color: BrushesUtils.White));
-
-                // END Segments break and road line
+                _world.Generate();
+                
             }
 
             if (SelectedPoint is not null && IntentionSegment is not null)

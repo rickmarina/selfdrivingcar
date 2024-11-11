@@ -57,7 +57,7 @@ public partial class MainWindow : Window
         RootJson? graphJson = JsonSerializer.Deserialize<RootJson>(json);
 
         world?.Dispose();
-        world?.Load(graphJson);
+        world?.Load(graphJson, true);
 
     }
     private void MapCanvas_Loaded(object sender, RoutedEventArgs e)
