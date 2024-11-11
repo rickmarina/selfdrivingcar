@@ -50,8 +50,10 @@ namespace selfdrivingcar.src.visual
                     var pA = _visualGraph.VisualPoints.FirstOrDefault(v => v.GetPoint().Equals(new Point(x.PointA.coord.X, x.PointA.coord.Y)));
                     var pB = _visualGraph.VisualPoints.FirstOrDefault(v => v.GetPoint().Equals(new Point(x.PointB.coord.X, x.PointB.coord.Y)));
                     _visualGraph.TryAddSegment(new Segment(pA.GetPoint(), pB.GetPoint()));
-                }
+                    }
                 );
+
+                
             }
         }
 

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static selfdrivingcar.src.world.Enums;
 
 namespace selfdrivingcar.src
 {
@@ -12,7 +13,7 @@ namespace selfdrivingcar.src
         private Segment _skeleton;
         private readonly int _width;
         private readonly int _roundness;
-        private PolygonG _polygon;
+        public PolygonG Poly { get; private set; }
 
         public Envelope(Segment skeleton, int width, Canvas canvas, int roundness = 1) : base(canvas)
         {
@@ -53,27 +54,32 @@ namespace selfdrivingcar.src
             return new PolygonG(roundPoints);
 
         }
+
+        public void UpdatePoly()
+        {
+            Poly = GeneratePolygon();
+        }
         
         public void Draw()
         {
-            _polygon = GeneratePolygon();
+            Poly = GeneratePolygon();
 
             shape = new System.Windows.Shapes.Polygon()
             {
-                StrokeThickness = 2,
-                Stroke = Brushes.Blue,
-                Fill = new SolidColorBrush(Color.FromArgb(30, 0, 0, 255)),
+                StrokeThickness = 13,
+                Stroke = BrushesUtils.BrushRoad,
+                Fill = BrushesUtils.BrushRoad,
+               
             };
 
-            foreach (var p in _polygon._points)
+            foreach (var p in Poly.Points)
             {
                 shape.Points.Add(new System.Windows.Point(p.coord.X, p.coord.Y));
             }
             shape.IsEnabled = false;
             shape.IsHitTestVisible = false;
-            Canvas.SetZIndex(shape, -10);
 
-            AddToCanvas();
+            AddToCanvas(ZINDEXES.ROAD);
         }
 
         public void UnDraw()

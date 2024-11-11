@@ -1,6 +1,7 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using selfdrivingcar.src.world;
 
 namespace selfdrivingcar.src.visual
 {
@@ -8,7 +9,7 @@ namespace selfdrivingcar.src.visual
     {
         private readonly Point _point;
         private float Size = 18;
-        private static readonly SolidColorBrush DefaultFillColor = Brushes.Black;
+        private static readonly SolidColorBrush DefaultFillColor = BrushesUtils.BlackTransparent(60);
         private static readonly SolidColorBrush DefaultStrokeColor = Brushes.Black;
         private static readonly SolidColorBrush DefaultStrokeColorSelected = Brushes.Yellow;
         private static readonly SolidColorBrush DefaultFillColorHovered = Brushes.OrangeRed;
@@ -48,7 +49,7 @@ namespace selfdrivingcar.src.visual
             Canvas.SetLeft(shape, this._point.coord.X - rad);
             Canvas.SetTop(shape, this._point.coord.Y - rad);
 
-            AddToCanvas();
+            AddToCanvas(Enums.ZINDEXES.ROAD_LINES);
         }
 
         public void Selected(bool active)

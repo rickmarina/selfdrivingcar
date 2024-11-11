@@ -9,6 +9,6 @@ namespace selfdrivingcar.src.world
     internal class WorldSettings
     {
         public int RoadWidth { get; set; } = 100;
-        public int RoadRoundness { get; set; } = 3;
+        public int RoadRoundness { get; set; } = 10;
     }
 }

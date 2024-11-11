@@ -1,32 +1,37 @@
 ﻿using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using selfdrivingcar.src.world;
 
 namespace selfdrivingcar.src.visual
 {
-    internal class VisualPolygon : VisualBase<Polygon>
+    internal class VisualPolygon : VisualBase<Polyline>
     {
-        private readonly List<Point> _points; 
+        public List<Point> _points { get; private set; }
         public VisualPolygon(Canvas canvas, List<Point> points) : base(canvas)
         {
             _points = points;
         }
 
+        public void UpdatePoly(List<Point> points)
+        {
+            this._points = points;
+        }
         public void Draw()
         {
-            shape = new Polygon()
+            shape = new Polyline()
             {
-                Stroke = Brushes.Blue,
-                StrokeThickness = 2,
-                Fill = new SolidColorBrush(Color.FromArgb(30, 0, 0, 255)),
+                Stroke = Brushes.Red,
+                StrokeThickness = 2               
 
             };
 
-            foreach(var p in _points) {
+            foreach (var p in _points)
+            {
                 shape.Points.Add(new System.Windows.Point(p.coord.X, p.coord.Y));
             }
 
-            AddToCanvas();
+            AddToCanvas(Enums.ZINDEXES.ROAD_LINES);
         }
 
         public void UnDraw()

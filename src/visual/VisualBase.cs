@@ -1,6 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows.Controls;
 using System.Windows.Shapes;
+using static selfdrivingcar.src.world.Enums;
 
 namespace selfdrivingcar.src.visual
 {
@@ -15,12 +16,13 @@ namespace selfdrivingcar.src.visual
             _canvas = canvas;
         }
 
-        public void AddToCanvas()
+        public void AddToCanvas(ZINDEXES zindex)
         {
             if (addedToCanvas)
                 throw new InvalidOperationException("Point is already added to canvas");
 
             addedToCanvas = true;
+            Canvas.SetZIndex(shape, Convert.ToInt32(zindex));
             _canvas.Children.Add(shape);
         }
         public void RemoveFromCanvas()
