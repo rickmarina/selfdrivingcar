@@ -18,13 +18,13 @@ namespace selfdrivingcar.src.visual
         private readonly WorldSettings _settings;
 
         //Procedural road borders 
-        private List<VisualSegment> _roadBorders = new();
+        private List<VisualSegment> _roadBorders = [];
 
         //Procedural buildings 
-        private List<Envelope> _buildings = new(); 
+        private List<Envelope> _buildings = []; 
 
         //Procedural trees
-        private List<VisualPoint> _trees = new();
+        private List<VisualPoint> _trees = [];
 
         public World(MainWindow window, Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
         {

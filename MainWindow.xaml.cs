@@ -16,8 +16,6 @@ namespace selfdrivingcar;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private System.Windows.Point lastMousePosition;
-
     private World? world;
 
     public MainWindow()
