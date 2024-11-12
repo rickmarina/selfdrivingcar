@@ -20,8 +20,15 @@ namespace selfdrivingcar.src.visual
         private readonly Canvas _canvas;
         private ScaleTransform _scale;
         private TranslateTransform _translate;
-        private List<VisualSegment> _roadBorders = new();
         private readonly WorldSettings _worldSettings;
+
+        //Procedural road borders 
+        private List<VisualSegment> _roadBorders = new();
+
+        //Procedural buildings 
+        private List<Envelope> _buildings = new(); 
+
+        //Procedural trees
 
 
         public World(Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
@@ -70,7 +77,7 @@ namespace selfdrivingcar.src.visual
         /// </summary>
         public void Generate()
         {
-            // START Segments break and road line
+            //Generate Road
             // Además de saber qué segmentos contienen el punto, recuperar la distancia entre el punto que se mueve y los segmentos para saber cuales tenemos que actualizar
 
             _roadBorders.ForEach(x => x.UnDraw());
@@ -81,7 +88,69 @@ namespace selfdrivingcar.src.visual
             _roadBorders = roadSegmentsVisual;
             roadSegmentsVisual.ForEach(x => x.Draw(width: 4, color: BrushesUtils.White));
 
-            // END Segments break and road line
+            //Generate buildings 
+            _buildings.ForEach(x => x.UnDraw()); 
+            _buildings = GenerateBuildings();
+            _buildings.ForEach(x => x.Draw(_worldSettings.BuidingStrokeThickness, fillBrush: _worldSettings.BuildingFillColor));
+
+            //Generate trees
+        }
+
+        public List<Envelope> GenerateBuildings()
+        {
+            var tmpEnvelopes = new List<Envelope>(); 
+            foreach (var seg in _visualGraph.VisualSegments)
+            {
+                tmpEnvelopes.Add(
+                    new Envelope(seg.GetSegment(), _worldSettings.RoadWidth + _worldSettings.BuildingWidth + _worldSettings.BuildingSpacing * 2, _canvas, roundness: _worldSettings.RoadRoundness)
+                    );
+            }
+
+            var guides = PolygonG.Union(tmpEnvelopes.Select(x=> x.Poly).ToList()!);
+            guides = guides.Where(x=> x.Length() > _worldSettings.BuildingMinLength).ToList();
+
+            var supports = new List<Segment>(); 
+            foreach (var seg in guides)
+            {
+                float len = seg.Length() + _worldSettings.BuildingSpacing;
+                int buildingCount = (int)Math.Floor(len/ (_worldSettings.BuildingMinLength +  _worldSettings.BuildingSpacing));
+                float buildingLength = len / buildingCount - _worldSettings.BuildingSpacing;
+
+                Vector2 dir = seg.DirectionVector();
+
+                Point q1 = seg.PointA;
+                Point q2 = new Point(Vector2.Add(q1.coord, Vector2.Multiply(dir, buildingLength)));
+
+                supports.Add(new Segment(q1, q2));
+
+                for (int i= 2; i<= buildingCount; i++)
+                {
+                    q1 = new Point(Vector2.Add(q2.coord, Vector2.Multiply(dir, _worldSettings.BuildingSpacing)));
+                    q2 = new Point(Vector2.Add(q1.coord, Vector2.Multiply(dir, buildingLength)));
+                    supports.Add(new Segment(q1, q2));
+                }
+            }
+
+            List<Envelope> bases = new(); 
+            foreach (var seg in supports)
+            {
+                bases.Add(new Envelope(seg, _worldSettings.BuildingWidth, _canvas));
+            }
+
+            
+
+            for (int i = 0; i < bases.Count-1; i++)
+            {
+                for (int j= i+1; j< bases.Count; j++)
+                {
+                    if (bases[i].Poly.IntersectsPoly(bases[j].Poly)) {
+                        bases.RemoveAt(j);
+                        j--;
+                    }
+                }
+            }
+
+            return bases;
         }
 
         public void Dispose()

@@ -1,4 +1,6 @@
-﻿using System.Windows.Media;
+﻿using selfdrivingcar.src.math;
+using System.Numerics;
+using System.Windows.Media;
 using System.Windows.Shapes;
 
 namespace selfdrivingcar.src
@@ -12,6 +14,11 @@ namespace selfdrivingcar.src
             PointA = pointA;
             PointB = pointB;
         }
+
+        public float Length() => Utils.Distance(PointA, PointB);
+
+        public Vector2 DirectionVector() => Utils.DirectionVector(PointA, PointB);
+
         public override bool Equals(object? obj)
         {
             if (obj is Segment otherSegment)

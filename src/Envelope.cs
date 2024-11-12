@@ -20,6 +20,7 @@ namespace selfdrivingcar.src
             _skeleton = skeleton;
             _width = width;
             _roundness = roundness;
+            UpdatePoly();
         }
 
         private PolygonG GeneratePolygon()
@@ -60,15 +61,15 @@ namespace selfdrivingcar.src
             Poly = GeneratePolygon();
         }
         
-        public void Draw()
+        public void Draw(int strockeThickness, SolidColorBrush? fillBrush = null)
         {
             Poly = GeneratePolygon();
 
             shape = new System.Windows.Shapes.Polygon()
             {
-                StrokeThickness = 13,
+                StrokeThickness = strockeThickness,
                 Stroke = BrushesUtils.BrushRoad,
-                Fill = BrushesUtils.BrushRoad,
+                Fill = fillBrush ?? BrushesUtils.BrushRoad,
                
             };
 

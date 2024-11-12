@@ -75,6 +75,20 @@ namespace selfdrivingcar.src
 
         }
 
+        public bool IntersectsPoly(PolygonG poly)
+        {
+            foreach (var s1 in Segments)
+            {
+                foreach (var s2 in poly.Segments)
+                {
+                    (var intersectionPoint, float offset) = (Utils.GetIntersection(s1.PointA, s1.PointB, s2.PointA, s2.PointB));
+                    if (intersectionPoint != null)
+                        return true;
+                }
+            }
+            return false;
+        }
+
         public static void MultiBreak(List<PolygonG> polys)
         {
             for (int i = 0; i < polys.Count-1; i++)

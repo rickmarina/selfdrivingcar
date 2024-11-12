@@ -19,7 +19,6 @@ namespace selfdrivingcar.src.visual
         [JsonIgnore]
         public List<VisualSegment> VisualSegments { get; set; }
         private List<VisualSegment> _intersectionSegments;
-        private VisualPolygon _polyRoadBorder; 
 
         private Point? MousePosition = null; // mouse position on the canvas
         private VisualPoint? SelectedPoint; // point selected
@@ -43,7 +42,6 @@ namespace selfdrivingcar.src.visual
             IntentionSegment.Draw(strokedasharray: [4,2]);
 
             _intersectionSegments = new();
-            _polyRoadBorder = new(_canvas, []);
 
             //Canvas events
             this._canvas.MouseDown += _canvas_MouseDown;

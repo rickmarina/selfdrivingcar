@@ -27,6 +27,9 @@ namespace selfdrivingcar.src.math
             return nearest;
         }
 
+        public static Vector2 DirectionVector(Point pA, Point pB) {
+            return Vector2.Normalize(Vector2.Subtract(pB.coord, pA.coord));
+        } 
         public static float Distance(Point pA, Point pB)
         {
             return Vector2.Distance(pA.coord, pB.coord);

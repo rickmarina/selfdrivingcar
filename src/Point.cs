@@ -11,6 +11,11 @@ namespace selfdrivingcar.src
             this.coord = new Vector2(x, y);
         }
 
+        public Point(Vector2 v)
+        {
+            this.coord = v;
+        }
+
         public override bool Equals(object? obj)
         {
             if (obj is Point otherPoint)

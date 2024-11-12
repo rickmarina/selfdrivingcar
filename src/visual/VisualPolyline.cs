@@ -5,10 +5,10 @@ using selfdrivingcar.src.world;
 
 namespace selfdrivingcar.src.visual
 {
-    internal class VisualPolygon : VisualBase<Polyline>
+    internal class VisualPolyline : VisualBase<Polyline>
     {
         public List<Point> _points { get; private set; }
-        public VisualPolygon(Canvas canvas, List<Point> points) : base(canvas)
+        public VisualPolyline(Canvas canvas, List<Point> points) : base(canvas)
         {
             _points = points;
         }
