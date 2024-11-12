@@ -1,17 +1,9 @@
-﻿using Microsoft.VisualBasic;
-using selfdrivingcar.src.math;
+﻿using selfdrivingcar.src.math;
 using selfdrivingcar.src.world;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
-using System.Runtime;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
 
 namespace selfdrivingcar.src.visual
 {
@@ -167,7 +159,6 @@ namespace selfdrivingcar.src.visual
 
         private List<VisualPoint> GenerateTrees()
         {
-
             var points = _roadBorders.SelectMany(x => new[] { x.GetSegment().PointA, x.GetSegment().PointB }).ToList();
             points = points.Concat(_buildings.SelectMany(x => x.Poly!.Points)).ToList();
 
@@ -176,18 +167,15 @@ namespace selfdrivingcar.src.visual
             float top = points.Min(x => x.coord.Y);
             float bottom = points.Max(x => x.coord.Y);
 
-
             var illegalPolys = _buildings.Select(x => x.Poly).Concat(_visualGraph.VisualSegments.Select(x => x.Envelope.Poly));
 
-
             var trees = new List<Point>();
-            
             while (trees.Count < _settings.TotalTrees)
             {
                 var p = new Point(Utils.Lerp(left, right, Random.Shared.NextSingle()), Utils.Lerp(bottom, top, Random.Shared.NextSingle()));
 
                 bool keep = true;
-                if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/3)) || trees.Any(x=> Utils.Distance(x, p) < _settings.TreeSize))
+                if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x, p) < _settings.TreeSize))
                     keep = false; 
 
                 if (keep)
@@ -195,7 +183,6 @@ namespace selfdrivingcar.src.visual
             }
 
             return trees.Select(x => new VisualPoint(x, _canvas)).ToList();
-
         }
 
         public void Dispose()
