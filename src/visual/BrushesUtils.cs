@@ -8,5 +8,6 @@ namespace selfdrivingcar.src.visual
         public static SolidColorBrush RandomBrush => new SolidColorBrush(Color.FromRgb((byte)Random.Shared.Next(0,255), (byte)Random.Shared.Next(0, 255), (byte)Random.Shared.Next(0, 255)));
         public static SolidColorBrush White => Brushes.White;
         public static SolidColorBrush BlackTransparent(byte alfa) => new SolidColorBrush(Color.FromArgb(alfa, 0, 0, 0));
+        public static SolidColorBrush BlueTransparent(byte alfa) => new SolidColorBrush(Color.FromArgb(alfa, 0, 0, 255));
     }
 }

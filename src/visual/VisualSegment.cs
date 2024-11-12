@@ -12,11 +12,13 @@ namespace selfdrivingcar.src.visual
         private static readonly SolidColorBrush DefaultStrokeColor = Brushes.Black;
         public Envelope Envelope { get; private set; }
         public bool HasEnvelope { get; private set; }
+        private readonly WorldSettings _settings;
 
         public VisualSegment(Segment segment, Canvas canvas, WorldSettings settings, bool hasEnvelope) : base(canvas)
         {
             _segment = segment;
             HasEnvelope = hasEnvelope;
+            _settings = settings;
 
             if (HasEnvelope)
                 Envelope = new Envelope(segment, settings.RoadWidth, canvas, settings.RoadRoundness);
@@ -41,7 +43,7 @@ namespace selfdrivingcar.src.visual
                 shape.StrokeDashArray = strokedasharray;
             }
             if (HasEnvelope)
-                Envelope.Draw();
+                Envelope.Draw(strockeThickness: _settings.RoadStrokeThickness);
 
             AddToCanvas(Enums.ZINDEXES.ROAD_LINES);
         }
@@ -51,7 +53,7 @@ namespace selfdrivingcar.src.visual
             if (HasEnvelope)
             {
                 Envelope?.UnDraw();
-                Envelope?.Draw();
+                Envelope?.Draw(strockeThickness: _settings.RoadStrokeThickness);
             }
 
             if (shape != null)
