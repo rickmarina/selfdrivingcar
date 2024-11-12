@@ -32,15 +32,15 @@ namespace selfdrivingcar.src.visual
             Canvas.SetLeft(shape, this._point.coord.X - rad);
             Canvas.SetTop(shape, this._point.coord.Y - rad);
         }
-        public void Draw(SolidColorBrush? color = null, int strokeThickness = 0, SolidColorBrush? strokeColor = null)
+        public void Draw(SolidColorBrush? color = null, int strokeThickness = 0, SolidColorBrush? strokeColor = null, double? size = null)
         {
             float rad = Size / 2;
 
             shape = new Ellipse()
             {
                 Fill = color ?? DefaultFillColor,
-                Width = Size,
-                Height = Size,
+                Width = size ?? Size,
+                Height = size ?? Size,
                 RenderTransformOrigin = new System.Windows.Point(0.5, 0.5),
                 StrokeThickness = 2,
                 Stroke = strokeColor ?? DefaultStrokeColor

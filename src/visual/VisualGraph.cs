@@ -27,6 +27,7 @@ namespace selfdrivingcar.src.visual
         private bool Dragging = false;
         private readonly WorldSettings _settings;
         private readonly World _world;
+
         public VisualGraph(World world, ViewPort viewPort, Graph graph, WorldSettings settings)
         {
             this._world = world;
@@ -66,7 +67,8 @@ namespace selfdrivingcar.src.visual
                 //envelope.Draw();
             }
         }
-        
+
+        public string GetHash() => Utils.GetObjectHash(this);
 
         private void _canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {

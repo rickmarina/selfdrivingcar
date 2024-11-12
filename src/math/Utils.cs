@@ -3,7 +3,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Numerics;
+using System.Security.Cryptography;
 using System.Text;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace selfdrivingcar.src.math
@@ -91,6 +93,26 @@ namespace selfdrivingcar.src.math
         public static Point Average(Point A, Point B)
         {
             return new Point((A.coord.X + B.coord.X) / 2, (A.coord.Y + B.coord.Y) / 2);
+        }
+
+        public static string GetObjectHash(object obj)
+        {
+            var options = new JsonSerializerOptions
+            {
+                IncludeFields = true  // Incluye los campos
+            };
+            var json = JsonSerializer.Serialize(obj, options);
+
+            using (var sha256 = SHA256.Create())
+            {
+                byte[] bytes = Encoding.UTF8.GetBytes(json);
+                byte[] hashBytes = sha256.ComputeHash(bytes);
+
+                var sb = new StringBuilder();
+                foreach (var b in hashBytes)
+                    sb.Append(b.ToString("x2"));
+                return sb.ToString();
+            }
         }
     }
 }
