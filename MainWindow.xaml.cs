@@ -28,7 +28,8 @@ public partial class MainWindow : Window
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        world = new World(MapCanvas, new src.world.WorldSettings(), scaleTransform, translateTransform);
+        
+        world = new World(mainWindow, MapCanvas, new src.world.WorldSettings(), scaleTransform, translateTransform);
     }
 
     private void Dispose_Click(object sender, RoutedEventArgs e)

@@ -26,11 +26,11 @@ namespace selfdrivingcar.src.visual
         //Procedural trees
         private List<VisualPoint> _trees = new();
 
-        public World(Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
+        public World(MainWindow window, Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
         {
             _canvas = canvas;
             _settings = settings;
-            _viewPort = new ViewPort(_canvas);
+            _viewPort = new ViewPort(_canvas, window.ActualWidth, window.ActualHeight);
             _visualGraph = new VisualGraph(this, _viewPort, new Graph([], []), settings);
 
             _scale = scaleT; 
@@ -77,7 +77,7 @@ namespace selfdrivingcar.src.visual
 
             string newhash = _visualGraph.GetHash();
 
-            Debug.WriteLine($"old-new hash {oldGraphHash} {newhash}");
+            Debug.WriteLine($"viewport: {_viewPort.Offset} width/height: {_viewPort.WindowSize}");
 
             if (newhash != oldGraphHash) { 
                 _roadBorders.ForEach(x => x.UnDraw());

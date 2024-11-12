@@ -7,7 +7,7 @@ namespace selfdrivingcar.src.visual
 {
     internal class ViewPort
     {
-
+        public Vector2 WindowSize { get; set; }
         public Canvas _canvas { get; private set; }
         public float _zoom = 1;
         public event EventHandler<float>? ZoomChanged;
@@ -28,8 +28,9 @@ namespace selfdrivingcar.src.visual
             }
         }
 
-        public ViewPort(Canvas canvas)
+        public ViewPort(Canvas canvas, double innerWidth, double innerHeight)
         {
+            WindowSize = new Vector2((float)innerWidth, (float)innerHeight);
             _canvas = canvas;
             _canvas.MouseWheel += HandleMouseWheel;
             _canvas.MouseDown += _canvas_MouseDown;
