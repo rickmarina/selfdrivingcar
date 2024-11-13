@@ -22,7 +22,7 @@ namespace selfdrivingcar.src.world
         public SolidColorBrush BuildingFillColor { get; set; } = BrushesUtils.BlueTransparent(80);
         public SolidColorBrush BuildingStrokeColor { get; set; } = BrushesUtils.BlueTransparent(0);
         //Trees
-        public int TotalTrees { get; set; } = 7;
+        public int TryCountTrees { get; set; } = 50;
         public float TreeSize { get; set; } = 160;
     }
 }

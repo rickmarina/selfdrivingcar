@@ -172,19 +172,32 @@ namespace selfdrivingcar.src.visual
             float top = points.Min(x => x.coord.Y);
             float bottom = points.Max(x => x.coord.Y);
 
-            var illegalPolys = _buildings.Select(x => x.Poly).Concat(_visualGraph.VisualSegments.Select(x => x.Envelope.Poly));
+            List<PolygonG?> illegalPolys = [.. _buildings.Select(x => x.Poly) , .. _visualGraph.VisualSegments.Select(x => x.Envelope.Poly)];
 
             var trees = new List<Point>();
-            while (trees.Count < _settings.TotalTrees)
+            int tryCount = 0;
+
+            while (tryCount < _settings.TryCountTrees)
             {
                 var p = new Point(Utils.Lerp(left, right, Random.Shared.NextSingle()), Utils.Lerp(bottom, top, Random.Shared.NextSingle()));
 
                 bool keep = true;
                 if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x, p) < _settings.TreeSize))
-                    keep = false; 
+                    keep = false;
 
                 if (keep)
+                {
+                    bool closeToSomething = illegalPolys.Any(x => x.DistanteToPoint(p) < _settings.TreeSize * 2);
+                    keep = closeToSomething;
+                }
+
+                if (keep)
+                {
                     trees.Add(p);
+                    tryCount = 0;
+                }
+                else
+                    tryCount++;
             }
 
             return trees.Select(x => new VisualPoint(x, _canvas)).ToList();
