@@ -40,6 +40,8 @@ namespace selfdrivingcar.src.visual
             Center = new Vector2((float)_canvas.ActualWidth/2,(float)_canvas.ActualHeight/2);
         }
 
+        public Vector2 GetViewPoint() => (-1*Offset)+(WindowSize*Zoom*0.5f);
+        //public Vector2 GetViewPoint() => Vector2.Multiply(Offset, -1);
         public Vector2 GetOffset() => Vector2.Add(Offset, _dragModel.Offset);
         public void SetOffset(Vector2 offset) { this.Offset = offset; }
 
@@ -47,7 +49,9 @@ namespace selfdrivingcar.src.visual
         {
             if (_dragModel.Active)
             {
-                Offset = Vector2.Add(Offset, _dragModel.Offset);
+
+                //Offset = Vector2.Add(Offset, _dragModel.Offset);
+                //Debug.WriteLine($"offset final {Offset}");
                 _dragModel.Reset();
             }
         }
@@ -57,13 +61,13 @@ namespace selfdrivingcar.src.visual
             if (_dragModel.Active)
             {
                 var mouse = e.GetPosition(_canvas);
-                //Debug.WriteLine($"GetMousePosition: {mouse}");
                 _dragModel.End = new Vector2((float)mouse.X, (float)mouse.Y);
                 _dragModel.Offset = Vector2.Subtract(_dragModel.End, _dragModel.Start);
-                //Offset = Vector2.Add(Offset, _dragModel.Offset);
+                Offset = Vector2.Add(Offset, _dragModel.Offset); //update offset here before we translate canvas and mouseposition resets to origin (start)
+                                                                 //add the real offset 
 
                 if (OffsetChanged != null) 
-                    OffsetChanged(this, _dragModel.Offset);
+                    OffsetChanged(this, _dragModel.Offset/Zoom); //emit the offset divided by zoom factor
             }
         }
 
@@ -71,7 +75,8 @@ namespace selfdrivingcar.src.visual
         {
             if (e.ChangedButton == MouseButton.Middle)
             {
-                var mouse = GetMouse(e);
+                var mouse = e.GetPosition(_canvas);
+                //Debug.WriteLine($"mouse click: {mouse.X}-{mouse.Y}");
                 _dragModel.Start = new Vector2((float)mouse.X, (float)mouse.Y);
                 _dragModel.Active = true; 
             }

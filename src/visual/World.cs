@@ -1,4 +1,5 @@
-﻿using selfdrivingcar.src.math;
+﻿using selfdrivingcar.src.items;
+using selfdrivingcar.src.math;
 using selfdrivingcar.src.world;
 using System.Diagnostics;
 using System.Numerics;
@@ -16,6 +17,7 @@ namespace selfdrivingcar.src.visual
         private ScaleTransform _scale;
         private TranslateTransform _translate;
         private readonly WorldSettings _settings;
+        private VisualPoint _viewPoint;
 
         //Procedural road path 
         //private List<VisualSegment> _roadBorders = [];
@@ -25,7 +27,7 @@ namespace selfdrivingcar.src.visual
         private List<Envelope> _buildings = []; 
 
         //Procedural trees
-        private List<VisualPoint> _trees = [];
+        private List<Tree> _trees = [];
 
         public World(MainWindow window, Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
         {
@@ -46,6 +48,8 @@ namespace selfdrivingcar.src.visual
             _translate.Y = -_canvas.ActualHeight / 2;
 
             _roadPath = new(_canvas, []);
+            _viewPoint = new(new Point(0, 0), _canvas);
+            _viewPoint.Draw(color: BrushesUtils.Red);
         }
         public VisualGraph GetVisualGraph() => this._visualGraph;
 
@@ -100,7 +104,7 @@ namespace selfdrivingcar.src.visual
                 //Generate trees
                 _trees.ForEach(x => x.UnDraw());
                 _trees = GenerateTrees();
-                _trees.ForEach(x => x.Draw(color: _settings.TreeColor, size: _settings.TreeSize));
+                _trees.ForEach(x => x.Draw());
 
                 oldGraphHash = newhash;
             }
@@ -164,7 +168,7 @@ namespace selfdrivingcar.src.visual
             return bases;
         }
 
-        private List<VisualPoint> GenerateTrees()
+        private List<Tree> GenerateTrees()
         {
             //var points = [.. _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList(), ]
             var points = _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList();
@@ -177,7 +181,7 @@ namespace selfdrivingcar.src.visual
 
             List<PolygonG?> illegalPolys = [.. _buildings.Select(x => x.Poly) , .. _visualGraph.VisualSegments.Select(x => x.Envelope.Poly)];
 
-            var trees = new List<Point>();
+            var trees = new List<Tree>();
             int tryCount = 0;
 
             while (tryCount < _settings.TryCountTrees)
@@ -185,7 +189,7 @@ namespace selfdrivingcar.src.visual
                 var p = new Point(Utils.Lerp(left, right, Random.Shared.NextSingle()), Utils.Lerp(bottom, top, Random.Shared.NextSingle()));
 
                 bool keep = true;
-                if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x, p) < _settings.TreeSize))
+                if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x.Center, p) < _settings.TreeSize))
                     keep = false;
 
                 // Avoiding trees in the middle of nowhere
@@ -197,14 +201,14 @@ namespace selfdrivingcar.src.visual
 
                 if (keep)
                 {
-                    trees.Add(p);
+                    trees.Add(new Tree(_canvas, p, _settings.TreeSize, _settings, _viewPort.GetViewPoint()));
                     tryCount = 0;
                 }
                 else
                     tryCount++;
             }
 
-            return trees.Select(x => new VisualPoint(x, _canvas)).ToList();
+            return trees;
         }
 
         public void Dispose()
@@ -216,6 +220,11 @@ namespace selfdrivingcar.src.visual
         {
             _translate.X += e.X;
             _translate.Y += e.Y;
+
+            //Debug.WriteLine($"{e.X} {e.Y}");
+
+            _viewPoint.UpdatePosition(new Point(_viewPort.GetViewPoint()));
+            Debug.WriteLine($"viewpoint:{_viewPort.GetViewPoint()}");
         }
 
         private void _viewPort_ZoomChanged(object? sender, float e)
