@@ -100,7 +100,7 @@ namespace selfdrivingcar.src.visual
                 //Generate trees
                 _trees.ForEach(x => x.UnDraw());
                 _trees = GenerateTrees();
-                _trees.ForEach(x => x.Draw(color: BrushesUtils.Green, size: _settings.TreeSize));
+                _trees.ForEach(x => x.Draw(color: _settings.TreeColor, size: _settings.TreeSize));
 
                 oldGraphHash = newhash;
             }
@@ -146,12 +146,15 @@ namespace selfdrivingcar.src.visual
             {
                 bases.Add(new Envelope(seg, _settings.BuildingWidth, _canvas));
             }
-            
+
+            float eps = 0.001f;
             for (int i = 0; i < bases.Count-1; i++)
             {
                 for (int j= i+1; j< bases.Count; j++)
                 {
-                    if (bases[i].Poly!.IntersectsPoly(bases[j].Poly!)) {
+                    if (bases[i].Poly!.IntersectsPoly(bases[j].Poly!) ||
+                        bases[i].Poly!.DistanceToPoly(bases[j].Poly!) < _settings.BuildingSpacing - eps
+                        ) {
                         bases.RemoveAt(j);
                         j--;
                     }
@@ -185,6 +188,7 @@ namespace selfdrivingcar.src.visual
                 if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x, p) < _settings.TreeSize))
                     keep = false;
 
+                // Avoiding trees in the middle of nowhere
                 if (keep)
                 {
                     bool closeToSomething = illegalPolys.Any(x => x.DistanteToPoint(p) < _settings.TreeSize * 2);
