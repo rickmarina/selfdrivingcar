@@ -126,12 +126,10 @@ namespace selfdrivingcar.src.visual
 
         private void _canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Debug.WriteLine($"Mouse UP");
             Dragging = false;
         }
         private void _canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Debug.WriteLine($"mouse down!");
             if (e.ChangedButton == System.Windows.Input.MouseButton.Right) // RIGHT CLICK (remove hovered point)
             {
                 if (SelectedPoint is not null)

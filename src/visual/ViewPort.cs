@@ -69,7 +69,6 @@ namespace selfdrivingcar.src.visual
 
         private void _canvas_MouseDown(object sender, MouseButtonEventArgs e)
         {
-            Debug.WriteLine($"Viewport mousedown");
             if (e.ChangedButton == MouseButton.Middle)
             {
                 var mouse = GetMouse(e);

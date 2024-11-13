@@ -61,7 +61,7 @@ public partial class MainWindow : Window
     }
     private void MapCanvas_Loaded(object sender, RoutedEventArgs e)
     {
-        Debug.WriteLine($"canvas loaded [{MapCanvas.ActualWidth}x{MapCanvas.ActualHeight}");
+        Debug.WriteLine($"Canvas loaded");
 
     }
 }
