@@ -17,8 +17,9 @@ namespace selfdrivingcar.src.visual
         private TranslateTransform _translate;
         private readonly WorldSettings _settings;
 
-        //Procedural road borders 
-        private List<VisualSegment> _roadBorders = [];
+        //Procedural road path 
+        //private List<VisualSegment> _roadBorders = [];
+        private VisualPath _roadPath;
 
         //Procedural buildings 
         private List<Envelope> _buildings = []; 
@@ -43,6 +44,8 @@ namespace selfdrivingcar.src.visual
 
             _translate.X = -_canvas.ActualWidth / 2;
             _translate.Y = -_canvas.ActualHeight / 2;
+
+            _roadPath = new(_canvas, []);
         }
         public VisualGraph GetVisualGraph() => this._visualGraph;
 
@@ -80,13 +83,14 @@ namespace selfdrivingcar.src.visual
             Debug.WriteLine($"viewport: {_viewPort.Offset} width/height: {_viewPort.WindowSize}");
 
             if (newhash != oldGraphHash) { 
-                _roadBorders.ForEach(x => x.UnDraw());
-
                 var roadSegments = PolygonG.Union(_visualGraph.VisualSegments.Where(x => x.HasEnvelope).Select(x => x.Envelope.Poly).ToList());
-                var roadSegmentsVisual = roadSegments.Select(x => new VisualSegment(x, _canvas, _settings, false)).ToList();
+                //_roadBorders.ForEach(x => x.UnDraw());
+                //_roadBorders = roadSegments.Select(x => new VisualSegment(x, _canvas, _settings, false)).ToList();
+                //_roadBorders.ForEach(x => x.Draw(width: 4, color: BrushesUtils.White));
 
-                _roadBorders = roadSegmentsVisual;
-                roadSegmentsVisual.ForEach(x => x.Draw(width: 4, color: BrushesUtils.White));
+                _roadPath.Undraw();
+                _roadPath = new VisualPath(_canvas, roadSegments);
+                _roadPath.Draw(BrushesUtils.White, _settings.RoadPathStrokeThickness);
 
                 //Generate buildings 
                 _buildings.ForEach(x => x.UnDraw()); 
