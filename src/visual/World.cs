@@ -163,8 +163,9 @@ namespace selfdrivingcar.src.visual
 
         private List<VisualPoint> GenerateTrees()
         {
-            var points = _roadBorders.SelectMany(x => new[] { x.GetSegment().PointA, x.GetSegment().PointB }).ToList();
-            points = points.Concat(_buildings.SelectMany(x => x.Poly!.Points)).ToList();
+            //var points = [.. _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList(), ]
+            var points = _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList();
+            points = [.. points, .. _buildings.SelectMany(x => x.Poly!.Points)];
 
             float left = points.Min(x => x.coord.X);
             float right = points.Max(x=> x.coord.X);

@@ -6,21 +6,21 @@ namespace selfdrivingcar.src.visual
 {
     internal class VisualPath : VisualBase<Path>
     {
-        private readonly List<Segment> _segments;
+        public List<Segment> Segments { get; private set; }
         public VisualPath(Canvas canvas, List<Segment> segments) : base(canvas)
         {
-            _segments = segments;
+            Segments = segments;
         }
 
         public void Draw(SolidColorBrush strokeColor, double strokeThickness)
         {
             PathFigure figura = new PathFigure();
-            figura.StartPoint = new System.Windows.Point(_segments[0].PointA.coord.X, _segments[0].PointA.coord.Y);
-            figura.Segments.Add(new LineSegment(new System.Windows.Point(_segments[0].PointB.coord.X, _segments[0].PointB.coord.Y), true));
-            Point lastPoint = _segments[0].PointB;
+            figura.StartPoint = new System.Windows.Point(Segments[0].PointA.coord.X, Segments[0].PointA.coord.Y);
+            figura.Segments.Add(new LineSegment(new System.Windows.Point(Segments[0].PointB.coord.X, Segments[0].PointB.coord.Y), true));
+            Point lastPoint = Segments[0].PointB;
 
-            for (int i = 1; i < _segments.Count; i++) {
-                var current = _segments[i];
+            for (int i = 1; i < Segments.Count; i++) {
+                var current = Segments[i];
                 if (lastPoint.Equals(current.PointA))
                 {
                     figura.Segments.Add(new LineSegment(new System.Windows.Point(current.PointA.coord.X, current.PointA.coord.Y), true));
