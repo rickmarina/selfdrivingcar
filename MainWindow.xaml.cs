@@ -16,8 +16,6 @@ namespace selfdrivingcar;
 /// </summary>
 public partial class MainWindow : Window
 {
-    private System.Windows.Point lastMousePosition;
-
     private World? world;
 
     public MainWindow()
@@ -28,7 +26,8 @@ public partial class MainWindow : Window
 
     private void Window_Loaded(object sender, RoutedEventArgs e)
     {
-        world = new World(MapCanvas, new src.world.WorldSettings(), scaleTransform, translateTransform);
+        
+        world = new World(mainWindow, MapCanvas, new src.world.WorldSettings(), scaleTransform, translateTransform);
     }
 
     private void Dispose_Click(object sender, RoutedEventArgs e)
@@ -62,7 +61,7 @@ public partial class MainWindow : Window
     }
     private void MapCanvas_Loaded(object sender, RoutedEventArgs e)
     {
-        Debug.WriteLine($"canvas loaded [{MapCanvas.ActualWidth}x{MapCanvas.ActualHeight}");
+        Debug.WriteLine($"Canvas loaded");
 
     }
 }

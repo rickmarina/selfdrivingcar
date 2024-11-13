@@ -1,15 +1,9 @@
-﻿using Microsoft.VisualBasic;
+﻿using selfdrivingcar.src.math;
 using selfdrivingcar.src.world;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Diagnostics;
 using System.Numerics;
-using System.Runtime;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media;
-using System.Windows.Media.Media3D;
 
 namespace selfdrivingcar.src.visual
 {
@@ -17,25 +11,27 @@ namespace selfdrivingcar.src.visual
     {
         private ViewPort _viewPort;
         private VisualGraph _visualGraph;
+        private string oldGraphHash = string.Empty;
         private readonly Canvas _canvas;
         private ScaleTransform _scale;
         private TranslateTransform _translate;
-        private readonly WorldSettings _worldSettings;
+        private readonly WorldSettings _settings;
 
-        //Procedural road borders 
-        private List<VisualSegment> _roadBorders = new();
+        //Procedural road path 
+        //private List<VisualSegment> _roadBorders = [];
+        private VisualPath _roadPath;
 
         //Procedural buildings 
-        private List<Envelope> _buildings = new(); 
+        private List<Envelope> _buildings = []; 
 
         //Procedural trees
+        private List<VisualPoint> _trees = [];
 
-
-        public World(Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
+        public World(MainWindow window, Canvas canvas, WorldSettings settings, ScaleTransform scaleT, TranslateTransform translateT)
         {
             _canvas = canvas;
-            _worldSettings = settings;
-            _viewPort = new ViewPort(_canvas);
+            _settings = settings;
+            _viewPort = new ViewPort(_canvas, window.ActualWidth, window.ActualHeight);
             _visualGraph = new VisualGraph(this, _viewPort, new Graph([], []), settings);
 
             _scale = scaleT; 
@@ -48,6 +44,8 @@ namespace selfdrivingcar.src.visual
 
             _translate.X = -_canvas.ActualWidth / 2;
             _translate.Y = -_canvas.ActualHeight / 2;
+
+            _roadPath = new(_canvas, []);
         }
         public VisualGraph GetVisualGraph() => this._visualGraph;
 
@@ -80,41 +78,53 @@ namespace selfdrivingcar.src.visual
             //Generate Road
             // Además de saber qué segmentos contienen el punto, recuperar la distancia entre el punto que se mueve y los segmentos para saber cuales tenemos que actualizar
 
-            _roadBorders.ForEach(x => x.UnDraw());
+            string newhash = _visualGraph.GetHash();
 
-            var roadSegments = PolygonG.Union(_visualGraph.VisualSegments.Where(x => x.HasEnvelope).Select(x => x.Envelope.Poly).ToList());
-            var roadSegmentsVisual = roadSegments.Select(x => new VisualSegment(x, _canvas, _worldSettings, false)).ToList();
+            Debug.WriteLine($"viewport: {_viewPort.Offset} width/height: {_viewPort.WindowSize}");
 
-            _roadBorders = roadSegmentsVisual;
-            roadSegmentsVisual.ForEach(x => x.Draw(width: 4, color: BrushesUtils.White));
+            if (newhash != oldGraphHash) { 
+                var roadSegments = PolygonG.Union(_visualGraph.VisualSegments.Where(x => x.HasEnvelope).Select(x => x.Envelope.Poly).ToList());
+                //_roadBorders.ForEach(x => x.UnDraw());
+                //_roadBorders = roadSegments.Select(x => new VisualSegment(x, _canvas, _settings, false)).ToList();
+                //_roadBorders.ForEach(x => x.Draw(width: 4, color: BrushesUtils.White));
 
-            //Generate buildings 
-            _buildings.ForEach(x => x.UnDraw()); 
-            _buildings = GenerateBuildings();
-            _buildings.ForEach(x => x.Draw(_worldSettings.BuidingStrokeThickness, fillBrush: _worldSettings.BuildingFillColor));
+                _roadPath.Undraw();
+                _roadPath = new VisualPath(_canvas, roadSegments);
+                _roadPath.Draw(BrushesUtils.White, _settings.RoadPathStrokeThickness);
 
-            //Generate trees
+                //Generate buildings 
+                _buildings.ForEach(x => x.UnDraw()); 
+                _buildings = GenerateBuildings();
+                _buildings.ForEach(x => x.Draw(_settings.BuidingStrokeThickness, fillBrush: _settings.BuildingFillColor));
+
+                //Generate trees
+                _trees.ForEach(x => x.UnDraw());
+                _trees = GenerateTrees();
+                _trees.ForEach(x => x.Draw(color: _settings.TreeColor, size: _settings.TreeSize));
+
+                oldGraphHash = newhash;
+            }
         }
 
-        public List<Envelope> GenerateBuildings()
+        private List<Envelope> GenerateBuildings()
         {
             var tmpEnvelopes = new List<Envelope>(); 
             foreach (var seg in _visualGraph.VisualSegments)
             {
                 tmpEnvelopes.Add(
-                    new Envelope(seg.GetSegment(), _worldSettings.RoadWidth + _worldSettings.BuildingWidth + _worldSettings.BuildingSpacing * 2, _canvas, roundness: _worldSettings.RoadRoundness)
+                    new Envelope(seg.GetSegment(), _settings.RoadWidth + _settings.BuildingWidth + _settings.BuildingSpacing * 2, _canvas, roundness: _settings.RoadRoundness)
                     );
             }
 
             var guides = PolygonG.Union(tmpEnvelopes.Select(x=> x.Poly).ToList()!);
-            guides = guides.Where(x=> x.Length() > _worldSettings.BuildingMinLength).ToList();
+            guides = guides.Where(x=> x.Length() > _settings.BuildingMinLength).ToList();
 
             var supports = new List<Segment>(); 
             foreach (var seg in guides)
             {
-                float len = seg.Length() + _worldSettings.BuildingSpacing;
-                int buildingCount = (int)Math.Floor(len/ (_worldSettings.BuildingMinLength +  _worldSettings.BuildingSpacing));
-                float buildingLength = len / buildingCount - _worldSettings.BuildingSpacing;
+                float len = seg.Length() + _settings.BuildingSpacing;
+                int buildingCount = (int)Math.Floor(len/ (_settings.BuildingMinLength +  _settings.BuildingSpacing));
+                float buildingLength = len / buildingCount - _settings.BuildingSpacing;
 
                 Vector2 dir = seg.DirectionVector();
 
@@ -125,7 +135,7 @@ namespace selfdrivingcar.src.visual
 
                 for (int i= 2; i<= buildingCount; i++)
                 {
-                    q1 = new Point(Vector2.Add(q2.coord, Vector2.Multiply(dir, _worldSettings.BuildingSpacing)));
+                    q1 = new Point(Vector2.Add(q2.coord, Vector2.Multiply(dir, _settings.BuildingSpacing)));
                     q2 = new Point(Vector2.Add(q1.coord, Vector2.Multiply(dir, buildingLength)));
                     supports.Add(new Segment(q1, q2));
                 }
@@ -134,16 +144,17 @@ namespace selfdrivingcar.src.visual
             List<Envelope> bases = new(); 
             foreach (var seg in supports)
             {
-                bases.Add(new Envelope(seg, _worldSettings.BuildingWidth, _canvas));
+                bases.Add(new Envelope(seg, _settings.BuildingWidth, _canvas));
             }
 
-            
-
+            float eps = 0.001f;
             for (int i = 0; i < bases.Count-1; i++)
             {
                 for (int j= i+1; j< bases.Count; j++)
                 {
-                    if (bases[i].Poly.IntersectsPoly(bases[j].Poly)) {
+                    if (bases[i].Poly!.IntersectsPoly(bases[j].Poly!) ||
+                        bases[i].Poly!.DistanceToPoly(bases[j].Poly!) < _settings.BuildingSpacing - eps
+                        ) {
                         bases.RemoveAt(j);
                         j--;
                     }
@@ -151,6 +162,49 @@ namespace selfdrivingcar.src.visual
             }
 
             return bases;
+        }
+
+        private List<VisualPoint> GenerateTrees()
+        {
+            //var points = [.. _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList(), ]
+            var points = _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList();
+            points = [.. points, .. _buildings.SelectMany(x => x.Poly!.Points)];
+
+            float left = points.Min(x => x.coord.X);
+            float right = points.Max(x=> x.coord.X);
+            float top = points.Min(x => x.coord.Y);
+            float bottom = points.Max(x => x.coord.Y);
+
+            List<PolygonG?> illegalPolys = [.. _buildings.Select(x => x.Poly) , .. _visualGraph.VisualSegments.Select(x => x.Envelope.Poly)];
+
+            var trees = new List<Point>();
+            int tryCount = 0;
+
+            while (tryCount < _settings.TryCountTrees)
+            {
+                var p = new Point(Utils.Lerp(left, right, Random.Shared.NextSingle()), Utils.Lerp(bottom, top, Random.Shared.NextSingle()));
+
+                bool keep = true;
+                if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x, p) < _settings.TreeSize))
+                    keep = false;
+
+                // Avoiding trees in the middle of nowhere
+                if (keep)
+                {
+                    bool closeToSomething = illegalPolys.Any(x => x.DistanteToPoint(p) < _settings.TreeSize * 2);
+                    keep = closeToSomething;
+                }
+
+                if (keep)
+                {
+                    trees.Add(p);
+                    tryCount = 0;
+                }
+                else
+                    tryCount++;
+            }
+
+            return trees.Select(x => new VisualPoint(x, _canvas)).ToList();
         }
 
         public void Dispose()

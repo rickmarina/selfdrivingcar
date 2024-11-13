@@ -27,8 +27,10 @@ namespace selfdrivingcar.src.visual
         }
         public void RemoveFromCanvas()
         {
-            if (!addedToCanvas)
+            if (!addedToCanvas) { 
                 Debug.WriteLine("Point is already removed from canvas");
+                return;
+            }
 
             addedToCanvas = false;
             _canvas.Children.Remove(shape);

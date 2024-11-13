@@ -19,6 +19,8 @@ namespace selfdrivingcar.src
 
         public Vector2 DirectionVector() => Utils.DirectionVector(PointA, PointB);
 
+        public float DistanteToPoint(Point p) => Utils.DistanceFromPointToSegment(p, this);
+
         public override bool Equals(object? obj)
         {
             if (obj is Segment otherSegment)

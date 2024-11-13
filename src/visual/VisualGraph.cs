@@ -27,6 +27,7 @@ namespace selfdrivingcar.src.visual
         private bool Dragging = false;
         private readonly WorldSettings _settings;
         private readonly World _world;
+
         public VisualGraph(World world, ViewPort viewPort, Graph graph, WorldSettings settings)
         {
             this._world = world;
@@ -51,22 +52,20 @@ namespace selfdrivingcar.src.visual
         }
         public void Load(RootJson? root)
         {
-            if (root is not null) { 
+            if (root is not null && root._graph is not null) { 
                 root._graph.Points.ForEach(x =>
                     TryAddPoint(new Point(x.coord.X, x.coord.Y))
                 );
                 root._graph.Segments.ForEach(x => {
-                    var pA = VisualPoints.FirstOrDefault(v => v.GetPoint().Equals(new Point(x.PointA.coord.X, x.PointA.coord.Y)));
-                    var pB = VisualPoints.FirstOrDefault(v => v.GetPoint().Equals(new Point(x.PointB.coord.X, x.PointB.coord.Y)));
+                    var pA = VisualPoints.First(v => v.GetPoint().Equals(new Point(x.PointA.coord.X, x.PointA.coord.Y)));
+                    var pB = VisualPoints.First(v => v.GetPoint().Equals(new Point(x.PointB.coord.X, x.PointB.coord.Y)));
                     TryAddSegment(new Segment(pA.GetPoint(), pB.GetPoint()));
                 }
                 );
-
-                //Envelope envelope = new Envelope(VisualSegments[0].GetSegment(), 20, _canvas);
-                //envelope.Draw();
             }
         }
-        
+
+        public string GetHash() => Utils.GetObjectHash(this);
 
         private void _canvas_MouseMove(object sender, System.Windows.Input.MouseEventArgs e)
         {
@@ -127,12 +126,10 @@ namespace selfdrivingcar.src.visual
 
         private void _canvas_MouseUp(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Debug.WriteLine($"Mouse UP");
             Dragging = false;
         }
         private void _canvas_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
-            Debug.WriteLine($"mouse down!");
             if (e.ChangedButton == System.Windows.Input.MouseButton.Right) // RIGHT CLICK (remove hovered point)
             {
                 if (SelectedPoint is not null)

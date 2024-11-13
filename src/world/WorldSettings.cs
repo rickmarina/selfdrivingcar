@@ -13,6 +13,7 @@ namespace selfdrivingcar.src.world
         public int RoadWidth { get; set; } = 70;
         public int RoadRoundness { get; set; } = 10;
         public int RoadStrokeThickness { get; set; } = 13;
+        public int RoadPathStrokeThickness { get; set; } = 4;
         //Buildings 
         public int BuildingWidth { get; set;} = 150;
         public int BuildingMinLength { get; set; } = 150;
@@ -20,5 +21,9 @@ namespace selfdrivingcar.src.world
         public int BuidingStrokeThickness { get; set; } = 2;
         public SolidColorBrush BuildingFillColor { get; set; } = BrushesUtils.BlueTransparent(80);
         public SolidColorBrush BuildingStrokeColor { get; set; } = BrushesUtils.BlueTransparent(0);
+        //Trees
+        public int TryCountTrees { get; set; } = 50;
+        public float TreeSize { get; set; } = 160;
+        public SolidColorBrush TreeColor { get; set; } = BrushesUtils.TreeColor;
     }
 }

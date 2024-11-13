@@ -13,12 +13,12 @@ namespace selfdrivingcar.src
     }
     public class GraphJson
     {
-        public List<PointJson> Points { get; set; }
-        public List<SegmentJson> Segments { get; set; }
+        public required List<PointJson> Points { get; set; }
+        public required List<SegmentJson> Segments { get; set; }
     }
     public class PointJson
     {
-        public CoordJson coord { get; set; }
+        public required CoordJson coord { get; set; }
     }
     public class CoordJson
     {
@@ -28,16 +28,16 @@ namespace selfdrivingcar.src
 
     public class SegmentJson
     {
-        public PointAJson PointA { get; set; }
-        public PointBJson PointB { get; set; }
+        public required PointAJson PointA { get; set; }
+        public required PointBJson PointB { get; set; }
     }
     public class PointAJson
     {
-        public CoordJson coord { get; set; }
+        public required CoordJson coord { get; set; }
     }
 
     public class PointBJson
     {
-        public CoordJson coord { get; set; }
+        public required CoordJson coord { get; set; }
     }
 }
