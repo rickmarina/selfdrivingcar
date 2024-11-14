@@ -24,6 +24,7 @@ namespace selfdrivingcar.src.world
         //Trees
         public int TryCountTrees { get; set; } = 25;
         public float TreeSize { get; set; } = 160;
+        public int TreeLevels { get; set; } = 7;
         public SolidColorBrush TreeColor { get; set; } = BrushesUtils.TreeColor;
     }
 }

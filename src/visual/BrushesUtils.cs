@@ -1,4 +1,5 @@
-﻿using System.Windows.Media;
+﻿using selfdrivingcar.src.math;
+using System.Windows.Media;
 
 namespace selfdrivingcar.src.visual
 {
@@ -9,7 +10,9 @@ namespace selfdrivingcar.src.visual
         public static SolidColorBrush White => Brushes.White;
         public static SolidColorBrush Red => Brushes.Red;
         public static SolidColorBrush TreeColor => Brushes.DarkOliveGreen;
+        public static SolidColorBrush TreeColorLerp(float t) => new SolidColorBrush(Color.FromRgb(30, (byte)Utils.Lerp(50, 200, t), 70));
         public static SolidColorBrush BlackTransparent(byte alfa) => new SolidColorBrush(Color.FromArgb(alfa, 0, 0, 0));
         public static SolidColorBrush BlueTransparent(byte alfa) => new SolidColorBrush(Color.FromArgb(alfa, 0, 0, 255));
+        
     }
 }

@@ -1,13 +1,10 @@
-﻿using selfdrivingcar.src.visual;
+﻿using selfdrivingcar.src.math;
+using selfdrivingcar.src.visual;
 using selfdrivingcar.src.world;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Numerics;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace selfdrivingcar.src.items
 {
@@ -16,44 +13,82 @@ namespace selfdrivingcar.src.items
         private readonly Canvas _canvas;
         public Point Center { get; }
         private readonly float size;
+        private readonly float heightCoef;
         private readonly WorldSettings settings;
-        private VisualPoint pTree1;
-        private VisualSegment segment;
+        private List<VisualPolyGon> levelsTree;
 
-        public Tree(Canvas canvas, Point center, float size, WorldSettings settings, Vector2 viewPoint)
+        public Tree(Canvas canvas, Point center, float size, WorldSettings settings, Vector2 viewPoint, float HeightCoef = 0.3f)
         {
             this._canvas = canvas;
             this.Center = center;
             this.size = size; //size of the base
             this.settings = settings;
-            pTree1 = new VisualPoint(center, _canvas, size);
+            this.heightCoef = HeightCoef;
 
-            segment = new VisualSegment(new Segment(Center, new Point(GetTopVector(viewPoint))), _canvas, settings, false);
+            levelsTree = new();
+            Vector2 top = GetTopVector(viewPoint);
+
+            for (int level = 0; level < settings.TreeLevels; level++)
+            {
+                float t = level / (float)(settings.TreeLevels - 1);
+                Point point = new Point(Vector2.Lerp(Center.coord, top, t));
+                levelsTree.Add(new VisualPolyGon(_canvas, GenerateLevel(point, Utils.Lerp(size, 40, t))));
+            }
         }
 
         private Vector2 GetTopVector(Vector2 viewPoint)
         {
             Vector2 diff = Vector2.Subtract(Center.coord, viewPoint);
-            Vector2 top = Vector2.Add(Center.coord, diff);
+            Vector2 top = Vector2.Add(Center.coord, diff * heightCoef);
+            
+            //Limit tree height if it is too far
+            if (diff.Length() > 1000)
+                top = Vector2.Add(Center.coord, Vector2.Normalize(diff) * 290);
+
             return top;
         }
 
         public void UpdateViewPoint(Vector2 viewPoint)
         {
-            segment.GetSegment().PointB.coord = GetTopVector(viewPoint);
-            segment.UpdatePosition();
+            Vector2 top = GetTopVector(viewPoint);
+
+            for (int level = 0; level < settings.TreeLevels; level++)
+            {
+                float t = level / (float)(settings.TreeLevels - 1);
+                Point point = new Point(Vector2.Lerp(Center.coord, top, t));
+                levelsTree[level].UpdatePoly(GenerateLevel(point, Utils.Lerp(size, 40, t)));
+                //levelsTree[level].UpdatePosition(point);
+            }
+        }
+
+        public PolygonG GenerateLevel(Point point, float size)
+        {
+            List<Point> points = [];
+            float rad = size / 2; 
+
+            for (double a =0; a < Math.PI * 2; a+= Math.PI/16)
+            {
+                float kindOfRandom = (float)Math.Pow(Math.Cos(((a + Center.coord.X) * size) % 17), 2);
+                float noisyRad = rad * Utils.Lerp(0.5f, 1f, kindOfRandom);
+                points.Add(Utils.Translate(point, a, noisyRad));
+            }
+
+            return new PolygonG(points);
         }
 
         public void Draw()
         {
-            pTree1.Draw(color: BrushesUtils.TreeColor);
-            segment.Draw();
+            for (int level = 0; level < settings.TreeLevels; level++)
+            {
+                float t = level / (float)(settings.TreeLevels - 1);
+                SolidColorBrush treeColor = BrushesUtils.TreeColorLerp(t);
+                levelsTree[level].Draw(0, treeColor, treeColor);
+            }
         }
 
         public void UnDraw()
         {
-            pTree1.UnDraw();
-            segment.UnDraw();
+            levelsTree.ForEach(x => x.UnDraw());
         }
     }
 }
