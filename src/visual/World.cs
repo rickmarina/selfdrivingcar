@@ -108,6 +108,10 @@ namespace selfdrivingcar.src.visual
 
                 oldGraphHash = newhash;
             }
+
+            //Update trees viewpoint 
+            _trees.ForEach(x => x.UpdateViewPoint(_viewPort.GetViewPoint()));
+
         }
 
         private List<Envelope> GenerateBuildings()
@@ -222,9 +226,10 @@ namespace selfdrivingcar.src.visual
             _translate.Y += e.Y;
 
             //Debug.WriteLine($"{e.X} {e.Y}");
-
             _viewPoint.UpdatePosition(new Point(_viewPort.GetViewPoint()));
-            Debug.WriteLine($"viewpoint:{_viewPort.GetViewPoint()}");
+            Generate();
+
+            //Debug.WriteLine($"viewpoint:{_viewPort.GetViewPoint()}");
         }
 
         private void _viewPort_ZoomChanged(object? sender, float e)

@@ -18,7 +18,6 @@ namespace selfdrivingcar.src.items
         private readonly float size;
         private readonly WorldSettings settings;
         private VisualPoint pTree1;
-        private Vector2 top;
         private VisualSegment segment;
 
         public Tree(Canvas canvas, Point center, float size, WorldSettings settings, Vector2 viewPoint)
@@ -28,9 +27,21 @@ namespace selfdrivingcar.src.items
             this.size = size; //size of the base
             this.settings = settings;
             pTree1 = new VisualPoint(center, _canvas, size);
-            Vector2 diff = Vector2.Subtract(center.coord, viewPoint);
-            top = Vector2.Add(center.coord, diff);
-            segment = new VisualSegment(new Segment(center, new Point(top)), _canvas, settings, false);
+
+            segment = new VisualSegment(new Segment(Center, new Point(GetTopVector(viewPoint))), _canvas, settings, false);
+        }
+
+        private Vector2 GetTopVector(Vector2 viewPoint)
+        {
+            Vector2 diff = Vector2.Subtract(Center.coord, viewPoint);
+            Vector2 top = Vector2.Add(Center.coord, diff);
+            return top;
+        }
+
+        public void UpdateViewPoint(Vector2 viewPoint)
+        {
+            segment.GetSegment().PointB.coord = GetTopVector(viewPoint);
+            segment.UpdatePosition();
         }
 
         public void Draw()
