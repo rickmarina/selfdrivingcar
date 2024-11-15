@@ -38,12 +38,12 @@ namespace selfdrivingcar.src.items
 
         private Vector2 GetTopVector(Vector2 viewPoint)
         {
-            Vector2 diff = Vector2.Subtract(Center.coord, viewPoint);
-            Vector2 top = Vector2.Add(Center.coord, diff * heightCoef);
+            Vector2 diff = Vector2.Subtract(Center.coord, viewPoint) * heightCoef;
+            Vector2 top = Vector2.Add(Center.coord, diff);
             
             //Limit tree height if it is too far
-            if (diff.Length() > 1000)
-                top = Vector2.Add(Center.coord, Vector2.Normalize(diff) * 290);
+            if (diff.Length() > 250)
+                top = Vector2.Add(Center.coord, Vector2.Normalize(diff) * 250);
 
             return top;
         }
