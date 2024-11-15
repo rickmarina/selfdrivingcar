@@ -24,7 +24,7 @@ namespace selfdrivingcar.src.visual
         private VisualPath _roadPath;
 
         //Procedural buildings 
-        private List<Envelope> _buildings = []; 
+        private List<Building> _buildings = []; 
 
         //Procedural trees
         private List<Tree> _trees = [];
@@ -99,7 +99,7 @@ namespace selfdrivingcar.src.visual
                 //Generate buildings 
                 _buildings.ForEach(x => x.UnDraw()); 
                 _buildings = GenerateBuildings();
-                _buildings.ForEach(x => x.Draw(_settings.BuidingStrokeThickness, fillBrush: _settings.BuildingFillColor));
+                _buildings.ForEach(x => x.Draw(_viewPort.GetViewPoint()));
 
                 //Generate trees
                 _trees.ForEach(x => x.UnDraw());
@@ -112,9 +112,12 @@ namespace selfdrivingcar.src.visual
             //Update trees viewpoint 
             _trees.ForEach(x => x.UpdateViewPoint(_viewPort.GetViewPoint()));
 
+            //Update buildings viewpoint 
+            _buildings.ForEach(x => x.UpdateViewPoint(_viewPort.GetViewPoint()));
+
         }
 
-        private List<Envelope> GenerateBuildings()
+        private List<Building> GenerateBuildings()
         {
             var tmpEnvelopes = new List<Envelope>(); 
             foreach (var seg in _visualGraph.VisualSegments)
@@ -169,21 +172,21 @@ namespace selfdrivingcar.src.visual
                 }
             }
 
-            return bases;
+            return bases.Select(x=> new Building(_canvas, x.Poly!)).ToList();
         }
 
         private List<Tree> GenerateTrees()
         {
             //var points = [.. _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList(), ]
             var points = _roadPath.Segments.SelectMany(x => new[] { x.PointA, x.PointB }).ToList();
-            points = [.. points, .. _buildings.SelectMany(x => x.Poly!.Points)];
+            points = [.. points, .. _buildings.SelectMany(x => x.GetBasePoly().Points)];
 
             float left = points.Min(x => x.coord.X);
             float right = points.Max(x=> x.coord.X);
             float top = points.Min(x => x.coord.Y);
             float bottom = points.Max(x => x.coord.Y);
 
-            List<PolygonG?> illegalPolys = [.. _buildings.Select(x => x.Poly) , .. _visualGraph.VisualSegments.Select(x => x.Envelope.Poly)];
+            List<PolygonG?> illegalPolys = [.. _buildings.Select(x => x.GetBasePoly()) , .. _visualGraph.VisualSegments.Select(x => x.Envelope.Poly)];
 
             var trees = new List<Tree>();
             int tryCount = 0;
@@ -193,13 +196,13 @@ namespace selfdrivingcar.src.visual
                 var p = new Point(Utils.Lerp(left, right, Random.Shared.NextSingle()), Utils.Lerp(bottom, top, Random.Shared.NextSingle()));
 
                 bool keep = true;
-                if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanteToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x.Center, p) < _settings.TreeSize))
+                if (illegalPolys.Any(x => (x.ContainsPoint(p) || x.DistanceToPoint(p) < _settings.TreeSize/2)) || trees.Any(x=> Utils.Distance(x.Center, p) < _settings.TreeSize))
                     keep = false;
 
                 // Avoiding trees in the middle of nowhere
                 if (keep)
                 {
-                    bool closeToSomething = illegalPolys.Any(x => x.DistanteToPoint(p) < _settings.TreeSize * 2);
+                    bool closeToSomething = illegalPolys.Any(x => x.DistanceToPoint(p) < _settings.TreeSize * 2);
                     keep = closeToSomething;
                 }
 

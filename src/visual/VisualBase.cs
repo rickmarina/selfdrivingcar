@@ -16,6 +16,11 @@ namespace selfdrivingcar.src.visual
             _canvas = canvas;
         }
 
+        public void SetZIndex(int zIndex)
+        {
+            if (addedToCanvas)
+                Canvas.SetZIndex(shape, zIndex);
+        }
         public void AddToCanvas(ZINDEXES zindex)
         {
             if (addedToCanvas)

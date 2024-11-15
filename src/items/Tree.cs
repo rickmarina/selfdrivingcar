@@ -16,6 +16,7 @@ namespace selfdrivingcar.src.items
         private readonly float heightCoef;
         private readonly WorldSettings settings;
         private List<VisualPolyGon> levelsTree;
+        //private VisualPolyGon treeBase; 
 
         public Tree(Canvas canvas, Point center, float size, WorldSettings settings, Vector2 viewPoint, float HeightCoef = 0.3f)
         {
@@ -34,6 +35,7 @@ namespace selfdrivingcar.src.items
                 Point point = new Point(Vector2.Lerp(Center.coord, top, t));
                 levelsTree.Add(new VisualPolyGon(_canvas, GenerateLevel(point, Utils.Lerp(size, 40, t))));
             }
+            //treeBase = new VisualPolyGon(_canvas, GenerateLevel(Center, size));
         }
 
         private Vector2 GetTopVector(Vector2 viewPoint)
@@ -42,8 +44,8 @@ namespace selfdrivingcar.src.items
             Vector2 top = Vector2.Add(Center.coord, diff);
             
             //Limit tree height if it is too far
-            if (diff.Length() > 250)
-                top = Vector2.Add(Center.coord, Vector2.Normalize(diff) * 250);
+            if (diff.Length() > 220)
+                top = Vector2.Add(Center.coord, Vector2.Normalize(diff) * 220);
 
             return top;
         }
@@ -57,8 +59,8 @@ namespace selfdrivingcar.src.items
                 float t = level / (float)(settings.TreeLevels - 1);
                 Point point = new Point(Vector2.Lerp(Center.coord, top, t));
                 levelsTree[level].UpdatePoly(GenerateLevel(point, Utils.Lerp(size, 40, t)));
-                //levelsTree[level].UpdatePosition(point);
             }
+            //treeBase.UpdatePoly(GenerateLevel(Center, size));
         }
 
         public PolygonG GenerateLevel(Point point, float size)
@@ -84,6 +86,7 @@ namespace selfdrivingcar.src.items
                 SolidColorBrush treeColor = BrushesUtils.TreeColorLerp(t);
                 levelsTree[level].Draw(0, treeColor, treeColor);
             }
+            //treeBase.Draw(2, BrushesUtils.White, BrushesUtils.BlueTransparent(50));
         }
 
         public void UnDraw()
