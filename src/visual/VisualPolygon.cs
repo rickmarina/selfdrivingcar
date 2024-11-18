@@ -14,7 +14,7 @@ namespace selfdrivingcar.src.visual
         }
 
         /// <summary>
-        /// Update polygon points and update shape points in ordet to change automatically the canvas representation is already added to canvas
+        /// Update polygon points and update shape points in ordet to change automatically the canvas representation if shape is already added to canvas
         /// </summary>
         /// <param name="points"></param>
         public void UpdatePoly(PolygonG poly)

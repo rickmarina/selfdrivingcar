@@ -9,6 +9,7 @@ namespace selfdrivingcar.src.visual
         public static SolidColorBrush RandomBrush => new SolidColorBrush(Color.FromRgb((byte)Random.Shared.Next(0,255), (byte)Random.Shared.Next(0, 255), (byte)Random.Shared.Next(0, 255)));
         public static SolidColorBrush White => Brushes.White;
         public static SolidColorBrush Red => Brushes.Red;
+        public static SolidColorBrush Roof => Brushes.IndianRed;
         public static SolidColorBrush TreeColor => Brushes.DarkOliveGreen;
         public static SolidColorBrush Gray => Brushes.Gray;
         public static SolidColorBrush TreeColorLerp(float t) => new SolidColorBrush(Color.FromRgb(30, (byte)Utils.Lerp(50, 200, t), 70));

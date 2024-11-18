@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Windows.Controls;
 using System.Windows.Media;
+using static selfdrivingcar.src.world.Enums;
 
 namespace selfdrivingcar.src.visual
 {
@@ -86,6 +87,8 @@ namespace selfdrivingcar.src.visual
 
             Debug.WriteLine($"viewport: {_viewPort.Offset} width/height: {_viewPort.WindowSize}");
 
+            Vector2 viewPoint = _viewPort.GetViewPoint();
+
             if (newhash != oldGraphHash) { 
                 var roadSegments = PolygonG.Union(_visualGraph.VisualSegments.Where(x => x.HasEnvelope).Select(x => x.Envelope.Poly).ToList());
                 //_roadBorders.ForEach(x => x.UnDraw());
@@ -99,7 +102,7 @@ namespace selfdrivingcar.src.visual
                 //Generate buildings 
                 _buildings.ForEach(x => x.UnDraw()); 
                 _buildings = GenerateBuildings();
-                _buildings.ForEach(x => x.Draw(_viewPort.GetViewPoint()));
+                _buildings.ForEach(x => x.Draw(viewPoint));
 
                 //Generate trees
                 _trees.ForEach(x => x.UnDraw());
@@ -109,11 +112,23 @@ namespace selfdrivingcar.src.visual
                 oldGraphHash = newhash;
             }
 
-            //Update trees viewpoint 
-            _trees.ForEach(x => x.UpdateViewPoint(_viewPort.GetViewPoint()));
+            //Reorder items in order to get correct z-index
+            List<IItem> items = [.. _trees, .. _buildings];
+            items.Sort((a, b) => b.GetBase().DistanceToPoint(new Point(viewPoint)).CompareTo(a.GetBase().DistanceToPoint(new Point(viewPoint))));
 
-            //Update buildings viewpoint 
-            _buildings.ForEach(x => x.UpdateViewPoint(_viewPort.GetViewPoint()));
+            //Update trees and buildings according to viewpoint (adjust z-index)
+            int? zindexBase = (int)ZINDEXES.BUILDINGS_TREES;
+            items.ForEach(i =>
+            {
+                i.UpdateViewPoint(viewPoint, zindexBase); 
+                zindexBase += 10;
+            });
+
+
+            //_trees.ForEach(x => x.UpdateViewPoint(viewPoint));
+
+            ////Update buildings according to viewpoint (adjust z-index)
+            //_buildings.ForEach(x => x.UpdateViewPoint(viewPoint));
 
         }
 
@@ -172,7 +187,7 @@ namespace selfdrivingcar.src.visual
                 }
             }
 
-            return bases.Select(x=> new Building(_canvas, x.Poly!)).ToList();
+            return bases.Select(x=> new Building(_canvas, _settings, x.Poly!)).ToList();
         }
 
         private List<Tree> GenerateTrees()

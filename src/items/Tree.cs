@@ -8,23 +8,21 @@ using System.Windows.Media;
 
 namespace selfdrivingcar.src.items
 {
-    internal class Tree
+    internal class Tree : IItem
     {
         private readonly Canvas _canvas;
         public Point Center { get; }
         private readonly float size;
-        private readonly float heightCoef;
         private readonly WorldSettings settings;
         private List<VisualPolyGon> levelsTree;
         //private VisualPolyGon treeBase; 
 
-        public Tree(Canvas canvas, Point center, float size, WorldSettings settings, Vector2 viewPoint, float HeightCoef = 0.3f)
+        public Tree(Canvas canvas, Point center, float size, WorldSettings settings, Vector2 viewPoint)
         {
             this._canvas = canvas;
             this.Center = center;
             this.size = size; //size of the base
             this.settings = settings;
-            this.heightCoef = HeightCoef;
 
             levelsTree = new();
             Vector2 top = GetTopVector(viewPoint);
@@ -38,19 +36,17 @@ namespace selfdrivingcar.src.items
             //treeBase = new VisualPolyGon(_canvas, GenerateLevel(Center, size));
         }
 
+        public PolygonG GetBase() => levelsTree.First()._poly;
         private Vector2 GetTopVector(Vector2 viewPoint)
         {
-            Vector2 diff = Vector2.Subtract(Center.coord, viewPoint) * heightCoef;
-            Vector2 top = Vector2.Add(Center.coord, diff);
-            
+            Vector2 diff = Vector2.Subtract(Center.coord, viewPoint) * 0.4f;
             //Limit tree height if it is too far
-            if (diff.Length() > 220)
-                top = Vector2.Add(Center.coord, Vector2.Normalize(diff) * 220);
+            Vector2 top = Vector2.Add(Center.coord, Vector2.Normalize(diff) * Math.Min(diff.Length(), settings.TreeHeight));
 
             return top;
         }
 
-        public void UpdateViewPoint(Vector2 viewPoint)
+        public void UpdateViewPoint(Vector2 viewPoint, int? zindex)
         {
             Vector2 top = GetTopVector(viewPoint);
 
