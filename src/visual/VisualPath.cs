@@ -14,6 +14,8 @@ namespace selfdrivingcar.src.visual
 
         public void Draw(SolidColorBrush strokeColor, double strokeThickness)
         {
+            if (Segments.Count == 0) return;
+
             PathFigure figura = new PathFigure();
             figura.StartPoint = new System.Windows.Point(Segments[0].PointA.coord.X, Segments[0].PointA.coord.Y);
             figura.Segments.Add(new LineSegment(new System.Windows.Point(Segments[0].PointB.coord.X, Segments[0].PointB.coord.Y), true));

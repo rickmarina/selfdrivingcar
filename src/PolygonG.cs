@@ -75,14 +75,14 @@ namespace selfdrivingcar.src
 
         }
 
-        public float DistanteToPoint(Point point)
+        public float DistanceToPoint(Point point)
         {
             return Segments.Select(x => x.DistanteToPoint(point)).Min();
         }
 
         public float DistanceToPoly(PolygonG poly)
         {
-            return Points.Select(x => poly.DistanteToPoint(x)).Min();
+            return Points.Select(x => poly.DistanceToPoint(x)).Min();
         }
 
         public bool IntersectsPoly(PolygonG poly)

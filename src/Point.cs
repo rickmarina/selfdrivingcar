@@ -16,6 +16,8 @@ namespace selfdrivingcar.src
             this.coord = v;
         }
 
+        public System.Windows.Point ToWindowsPoint() => new System.Windows.Point(coord.X, coord.Y);
+
         public override bool Equals(object? obj)
         {
             if (obj is Point otherPoint)

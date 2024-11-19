@@ -59,7 +59,7 @@ namespace selfdrivingcar.src.math
 
 
         }
-        public static Point Translate(Point loc, double angle, int offset)
+        public static Point Translate(Point loc, double angle, float offset)
         {
             return new Point((float)(loc.coord.X + Math.Cos(angle) * offset), (float)(loc.coord.Y + Math.Sin(angle) * offset));
         }

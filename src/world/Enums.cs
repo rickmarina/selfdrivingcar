@@ -6,7 +6,9 @@
         {
             ROAD = 10,
             ROAD_LINES = 20,
-            INTENTION = 30
+            INTENTION = 30,
+            BUILDINGS_TREES = 40,
+            VIEWPOINT = 100
         }
     }
 }
