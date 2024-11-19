@@ -125,11 +125,6 @@ namespace selfdrivingcar.src.visual
             });
 
 
-            //_trees.ForEach(x => x.UpdateViewPoint(viewPoint));
-
-            ////Update buildings according to viewpoint (adjust z-index)
-            //_buildings.ForEach(x => x.UpdateViewPoint(viewPoint));
-
         }
 
         private List<Building> GenerateBuildings()
